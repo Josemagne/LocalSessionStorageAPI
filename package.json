@@ -1,0 +1,14 @@
+{
+  "name": "localsessionstorageapi",
+  "version": "1.0.0",
+  "description": "<p>localSessionStorageAPI is an API that simplifies the CRUD operations with the localStorage and sessionStorage</p>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "$"
+  ],
+  "author": "",
+  "license": "ISC"
+}
