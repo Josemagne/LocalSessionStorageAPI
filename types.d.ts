@@ -1,3 +1,4 @@
+
 declare interface Props {
     [key: string]: string;
 }
@@ -14,14 +15,15 @@ declare interface Entity {
  * Interface for the object 'entities'
  */
 declare interface Entities {
-    local: {
+    localStorage: {
         [key: string]: Entity
-    },
-    session: {
+    };
+    sessionStorage: {
         [key: string]: Entity
     }
 
 }
+
 
 /**
  *  A collection of all the instances of an Entity

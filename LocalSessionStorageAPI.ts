@@ -1,17 +1,28 @@
+
+
+
 class LocalSessionStorageAPI {
 
     /**
      * Object that contains the key of the entity in the key and the type of the value in the value
      */
 
-    entities: Entities = {
-        local: {
+    public static entities: Entities = {
+        localStorage: {
 
         },
-        session: {
+        sessionStorage: {
 
         }
     };
+
+    // TODO Do we need that?
+    /**
+     * Contains the name of entities
+     */
+    public static entitiesList: string[] = [];
+
+    public static storageChoice: Storage;
 
 
 
@@ -21,51 +32,40 @@ class LocalSessionStorageAPI {
      * @example An entity Book has for example the properties: 'title', 'pages', 'language',
      * @param props Object that contains the props of of the entity
      */
-    constructor(entityName: string, props: Props, storage: boolean = false) {
-
+    constructor(entityName: string, props: Props, storage: Storage) {
+        // set the choice for the default storage
+        LocalSessionStorageAPI.storageChoice = storage;
 
 
         // For sessionStorage
         if (storage) {
             // if 0numberOfInstances is not set then we create it
-            if (!sessionStorage.getItem('0numberOfInstances')) {
-                sessionStorage.setItem('0numberOfInstances', '')
+            if (!storage.getItem('0numberOfInstances')) {
+                storage.setItem('0numberOfInstances', '')
             }
 
             // Keep track of entities
-            if (!sessionStorage.getItem('0numberOfEntities')) {
-                sessionStorage.setItem('0numberOfEntities', '1');
+            if (!storage.getItem('0numberOfEntities')) {
+                storage.setItem('0numberOfEntities', '1');
             }
 
-            if (!sessionStorage.getItem('0entitiesEnum')) {
-                sessionStorage.setItem('0entitiesEnum', entityName);
-                this.entities.local.entityName.id = 1;
-                this.entities.local.entityName.name = entityName;
-                this.entities.local.entityName.props = props;
-                this.entities.local.entityName.numberOfInstances = 0;
+            if (!storage.getItem('0entitiesEnum')) {
+                storage.setItem('0entitiesEnum', entityName);
+
+                let type: "localStorage" | "sessionStorage";
+                if (storage === localStorage) {
+                    type = "localStorage";
+                } else {
+                    type = 'sessionStorage';
+                }
+
+                LocalSessionStorageAPI.entities[type].entityName.id = 1;
+                LocalSessionStorageAPI.entities[type].entityName.name = entityName;
+                LocalSessionStorageAPI.entities[type].entityName.props = props;
+                LocalSessionStorageAPI.entities[type].entityName.numberOfInstances = 0;
             }
+
         }
-        else {
-            // if 0numberOfInstances is not set then we create it
-            if (!localStorage.getItem('0numberOfInstances')) {
-
-                localStorage.setItem('0numberOfInstances', '0');
-            }
-
-            // Keep track of entities
-            if (!localStorage.getItem('0numberOfEntities')) {
-                localStorage.setItem('0numberOfEntities', '1');
-            }
-
-            if (!localStorage.getItem('0entitiesEnum')) {
-                localStorage.setItem('0entitiesEnum', entityName)
-                this.entities.local.entityName.id = 1;
-                this.entities.local.entityName.name = entityName;
-                this.entities.local.entityName.props = props;
-                this.entities.local.entityName.numberOfInstances = 0;
-            }
-        }
-
     }
 
     /**
@@ -73,13 +73,14 @@ class LocalSessionStorageAPI {
      * @param props The properties of the entity
      * @param storage Which storage to interact with
      */
-    public static addEntity = (entityName: string, props: Props, storage: boolean = false) => {
+    public static addEntity = (entityName: string, props: Props, storage: Storage = LocalSessionStorageAPI.storageChoice) => {
 
     }
 
+    /* CREATE */
+    /* Here are all the methods that are about creating data */
 
-    // create
-    public static createInstance = (entityName: string, props: Props, storage: boolean = false): void => {
+    public static createInstance = (entityName: string, props: Props, storage: Storage): void => {
         let nextNumber: number = this.getEntityInstances() + 1;
         let keys: string[] = Object.keys(props);
         let values: string[] = Object.values(props);
@@ -94,11 +95,20 @@ class LocalSessionStorageAPI {
     }
 
 
-    // read
-    public static getInstance = (id: number, storage: boolean = false) => {
+    /* READ */
+    /* Here are all the methods that are about reading data */
+
+    /**
+     * Gets a single instance from an entity
+     * @param entityName Name of entity
+     * @param id Id of the instance
+     * @param storage 
+     * @returns 
+     */
+    public static getInstance = (entityName: string, id: number, storage: boolean = false) => {
 
 
-        // If we want the sessionStorage
+        // sessionStorage
         if (storage) {
 
             let keys = this.getTextFromKey(Object.keys(this.props));
@@ -106,7 +116,7 @@ class LocalSessionStorageAPI {
 
             return this.returnObject(keys, values)
         }
-        // Else we take the localStorage
+        // localStorage
         else {
             let keys = this.getTextFromKey(Object.keys(this.props));
             let values: string[] = Object.values(this.props);
@@ -117,84 +127,123 @@ class LocalSessionStorageAPI {
 
     }
 
+    /**
+     * Get all the instances of an entity
+     * @param entity Entity whose instances we want to retrieve
+     * @param storage What kind of web storage we want to access
+     */
+    public static getInstances = (entity: string, storage: boolean = false): Props[] => {
 
-    public static getInstances = (entity: string): Props[] => {
+    }
+
+
+
+    /**
+     * Gets the properties of an entity
+     * @param entityName Name of entity
+     * @param storage Kind of web storage
+     * @returns Object with key being the property and value the type of the property
+     */
+    public static getProperties = (entityName: string, storage: boolean = false) => {
+
+        // sessionStorage
+        if (storage) {
+
+        }
+
+        // localStorage
+        else {
+
+        }
+    }
+
+
+
+
+
+    /* UPDATE */
+    /* Here are all the methods that are related to editing data */
+
+    /**
+     * Changes the properties of an entity
+     * @param entityName Name of entity
+     * @param storage Kind of web storage
+     */
+    public static updateEntity = (entityName: string, storage: boolean = false) => {
+        // sessionStorage
+        if (storage) {
+
+        }
+
+        // localStorage
+        else {
+
+        }
 
     }
 
-    public static getProperty = (id: number, property: string, storage: boolean = false) => {
-
-        if (storage) return sessionStorage.getItem(`${id}${property}`);
-        else return localStorage.getItem(`${id}${property}`);
-    }
-
-
-
-
-    // update
-    public static updateEntity = (props: string[], storage: boolean = false) => {
-
-    }
+    /* DELETE */
+    /* Here are the methods that are related with deleting data */
 
     /**
      * Deletes all instances of an entity
      * @param entity Entity we want to delete
      */
-    public static deleteEntity = (entity: Entity, storage: boolean = false) => {
+    public static deleteEntity = (entityName: Entity, storage: boolean = false) => {
+        if (storage) {
+
+        }
+
+        else {
+
+        }
 
     }
 
 
-    // HELPER FUNCTIONS
-    // Helper functions can be accessed from the localStorage and sessionStorage methods
+    /* HELPER FUNCTIONS */
+    /* Helper functions can be accessed from the localStorage and sessionStorage methods */
 
     /**
-     * Returns the total number of instances that are in localStorage.
-     * The number of instances is equal to the biggest prefix in localStorage.
-     * We have an item with the key '0numberOfInstances'
+     * Returns the total number of instances for an entity
+     * We have an item with the key 'numberOfInstances' on each entity setting items that stores how much instances an entity has
      */
-    private static getNumberOfInstances = (): number | null => {
-        let numberOfInstances = localStorage.getItem('0numberOfInstances');
-        if (numberOfInstances) {
-
-            return parseInt(numberOfInstances);
-        } else {
-            return null;
-        }
+    private static getNumberOfInstances = (entityName: string, storage: Storage): number | null => {
+        let id = this.getEntityID(entityName);
     }
 
     /**
      * Gets the number of instances for an entity
      * @param entity Entity for the instances we search for
      */
-    private static getEntityInstances = (entity: string): number | null => {
+    private static getEntityInstances = (entity: string, storage: Storage): number | null => {
 
-        // Get the id of the entity
-        for (let i = 0; i < 9; i++) {
 
-        }
 
     }
 
     /**
      * Returns the number of entities
+     * @param storage Type of web storage
      */
-    private static getNumbeOfEntities = (storage: boolean = false): number | null => {
+    private static getNumberOfEntities = (storage: Storage): number | null => {
+        // Contains the keys of 0entitiesEnum
+        let keys: string[] = [];
+        // The biggest number in keys indicating the number of entities
+        let entitiesEnum = storage.getItem('0entitiesEnum');
 
-        // For sessionStorage
-        if (storage) {
-
+        if (entitiesEnum) {
+            entitiesEnum = JSON.parse(entitiesEnum);
+            keys = Object.keys(storage);
+            return parseInt(keys[keys.length - 1])
         }
+        else return null;
 
-        // For localStorage
-        if (!storage) {
-
-        }
     }
 
     /**
      * Returns the length of the numerical prefix for an entity
-     * @example 1 has the length of 1, 2 the length of 1, 10, the length of 2, 345 the length of 3 and 3545324 the length of 7
+     * @example 1.33 has the length of 4, 2.22 the length of 3, 1.0 the length of 2 and so on
      */
     private static getLengthOfPrefix = (entity: string): number => {
         let numberOfInstances = this.getNumberOfInstances().toString();
@@ -202,15 +251,15 @@ class LocalSessionStorageAPI {
         return numberOfInstances.length;
     }
 
-    private static getEntityID = (entity: string, storage: boolean = false): number => {
+    private static getEntityID = (entity: string, storage: Storage): number | null => {
 
-        // For sessionStorage
-        if (storage) {
-            let entitiesEnum = sessionStorage.getItem('0entitiesEnum')
-        }
+        let entitiesEnum = storage.getItem("0entitiesEnum");
 
+        if (entitiesEnum) {
+
+        } else return null;
     }
-}
+
 
 
     /**
@@ -219,39 +268,33 @@ class LocalSessionStorageAPI {
      */
     private static getTextFromKey = (key: string[]): string[] => {
 
-    let lengthOfPrefix = this.getLengthOfPrefix();
+        let lengthOfPrefix = this.getLengthOfPrefix();
 
 
-    let refinedKeys = [];
+        let refinedKeys = [];
 
-    for (let i = 0; i < key.length; i++) {
-        refinedKeys.push(key[i].substring(lengthOfPrefix - 1));
+        for (let i = 0; i < key.length; i++) {
+            refinedKeys.push(key[i].substring(lengthOfPrefix - 1));
+        }
+
+
+        return refinedKeys;
+
     }
-
-    return refinedKeys;
-
-}
 
     /**
-     * Brings keys and values together and puts out an object that represents an instance of an entity
-     * @param key Array of keys of an instance
-     * @param value Array of values of an instance
+     * Parses the string and returns an object
+     * @param key   The key in a web storage
      * @returns An instance in form of an object
      */
-    private static returnObject = (key: string[], value: string[]): Props => {
+    private static returnObject = (key: string, storage: Storage): Props | null => {
 
-    // The entity that gets returned
-    let instance: Props = {
+        let unparsedString = storage.getItem(key)
 
-    };
+        if ('string' === typeof unparsedString) return JSON.parse(unparsedString);
+        else return null;
 
-    for (let i = 0; i < key.length; i++) {
-        instance[key[i]] = value[i];
     }
-
-    return instance;
-
-}
 
     // TODO In the future add a constraint that the beginnig of the keys should not have a number
     // public static testForNumbers = (key: string): boolean => {
@@ -263,6 +306,11 @@ class LocalSessionStorageAPI {
 
     // }
 
+
+
+
 }
+
+// TODO Should we use a middleware?
 
 export default LocalSessionStorageAPI;

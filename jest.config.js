@@ -12,6 +12,15 @@ module.exports = {
       statements: 100,
     },
   },
+  globals: {
+    "ts-jest": {
+      tsconfig: "tsconfig.json",
+    },
+  },
+  transform: {
+    "^.+\\ts$": "ts-jest",
+  },
+  moduleFileExtensions: ["js", "ts"],
   verbose: true,
   testPathIgnorePatterns: ["/node_modules/"],
   roots: ["./"],

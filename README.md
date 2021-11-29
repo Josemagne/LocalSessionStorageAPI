@@ -3,6 +3,14 @@
 
 <p>The class can handle both sessionStorage and localStorage.</p>
 
+<div id="introduction">
+<h2>Introduction</h2>
+<p>The goal of LocalSessionStorageAPI is to lessen the request to the server. Frequent retrieval of data will be instead delegated to localStorage. Only the data that is scarcely used will be handled by a server API.</p>
+<h2>Purpose</h2>
+
+</div>
+
+<div id="documentation">
 <h2>Documentation</h2>
 <div id="terminology">
 <h2>Terminology</h2>
@@ -15,24 +23,38 @@
 <li>Instance: An instance is an object with the blueprint of the entity</li>
 <p>E.g.) The entity Book has an instance with data for its properties</p>
 </ul>
+<div id="class">
+<h2>Class</h2>
+<h3>Properties</h3>
+<li>
+#### entitiesList
+<p>An array of of entity names</p>
+</li>
+<li>
+#### storageChoice
+<p>The default storage if no storage type was specified in the method</p>
+</li>
+<h3>Methods</h3>
+</div>
 
 </div>
 <div id="instanciation">
 <h2>Instanciation</h2>
+### Genesis
 <p>At the instanciation of the class LocalSessionStorageAPI we create the following items:</p>
 <ul>
-<li>numberOfInstances: '0numberOfInstances</li>
-<li>numberOfEntities: '0numberOfEntities</li>
 <li>Listing of entities: '0entitiesEnum'</li>
+### Entities
+<li>entity: '{1-9}entityName'</li>
+<li>number of instances: '{1-9}.0numberOfInstances'</li>
 </ul>
 
 </div>
 <div id="methods">
 <h2>Methods</h2>
-<p>Both localStorage and sessionStorage access the same methods. To indicate with which of the two to interact with we give a last argument. With 'true' as last argument we interact with sessionStorage and with 'false' we interact with localStorage.</p>
+<p>Both localStorage and sessionStorage access the same methods. To indicate with which of the two to interact with we give a last argument. We pass either 'localStorage' or 'sessionStorage'.</p>
 <p>By default we interact with localStorage because the data will persist.</p>
-<p>This does not apply for the helper functions.</p>
-<p>If the parameter 'storage' is not specified then we select localStorage by default. </p>
+
 </div>
 
 <div id="functioning">
@@ -46,11 +68,26 @@
 <p>We can have entities between 1 to 9 that are prefixed with 1-9.</p>
 <p>All the instances of the entities are then further prefixed with a point and a number starting with 1</p>
 <p>The properties of an entity are saved in the second prefix 0.</p>
-<li>E.g.) For Video Games: 2.0: 'title:Minecraft, language:English,price:5,currency:usd'</li>
+<li>E.g.) For Video Games: 2.0: "title": "Minecraft", "language":"English", "price":5,"currency":"usd"'</li>
 
 <p>To keep track of the entities we have '0entitiesEnum'. 0EntitiesEnum lists all the entities that we have.</p>
-<li>E.g.) '1:employee,2:product,3:book,4:configuration,5:date, ...</li>
+<li>E.g.) "1":employee,"2":product,"3":book,"4":configuration,"5":date, ...</li>
+<p>Note that each key must be a string. We do that to use the JSON.parse() and JSON.stringify()</p>
+<h3>Middleware</h3>
+<p>Since sessionStorage and localStorage differ only in their scope and lifetime we can use a middleware called middleware(). The helper function accepts a boolean. 'true' stands for sessionStorage and 'false' for localStorage. </p>
+<p>This saves space.</p>
+<h3>Handling strings</h3>
+<p>Web storage allows us only to store strings. To efficiently convert the strings to objects we use JSON.parse() and JSON.stringify()</p>
 
+</div>
+</div>
+
+<div id="references">
+<h2>References</h2>
+<p>Here are resources to get sophisticated with web storage:</p>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage API by MDN</a></li>
+</ul>
 </div>
 
 <div id="amendments">
