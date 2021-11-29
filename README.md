@@ -21,14 +21,16 @@
 <h2>Instanciation</h2>
 <p>At the instanciation of the class LocalSessionStorageAPI we create the following items:</p>
 <ul>
-<li>numberOfInstances</li>
-<li>properties</li>
+<li>numberOfInstances: '0numberOfInstances</li>
+<li>numberOfEntities: '0numberOfEntities</li>
+<li>Listing of entities: '0entitiesEnum'</li>
 </ul>
 
 </div>
 <div id="methods">
 <h2>Methods</h2>
 <p>Both localStorage and sessionStorage access the same methods. To indicate with which of the two to interact with we give a last argument. With 'true' as last argument we interact with sessionStorage and with 'false' we interact with localStorage.</p>
+<p>By default we interact with localStorage because the data will persist.</p>
 <p>This does not apply for the helper functions.</p>
 <p>If the parameter 'storage' is not specified then we select localStorage by default. </p>
 </div>
@@ -38,7 +40,16 @@
 <p>How does the API work?</p>
 
 <p>properties is a listing of all the properties that the entity has.</p>
-<p>The first items are prefixed with a zero.</p>
+<p>The first items are prefixed with a zero. They contain the settings for the api.</p>
+<h3>Entities</h3>
+<p>Entities such as persons, employees, products, books and so on begin with {1-9}entity{nameOfEntity}.</p>
+<p>We can have entities between 1 to 9 that are prefixed with 1-9.</p>
+<p>All the instances of the entities are then further prefixed with a point and a number starting with 1</p>
+<p>The properties of an entity are saved in the second prefix 0.</p>
+<li>E.g.) For Video Games: 2.0: 'title:Minecraft, language:English,price:5,currency:usd'</li>
+
+<p>To keep track of the entities we have '0entitiesEnum'. 0EntitiesEnum lists all the entities that we have.</p>
+<li>E.g.) '1:employee,2:product,3:book,4:configuration,5:date, ...</li>
 
 </div>
 
