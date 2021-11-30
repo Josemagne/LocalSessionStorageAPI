@@ -1,10 +1,11 @@
-<h1>LocalSessionStorageAPI</h1>
+# LocalSessionStorageAPI
+
 <p>localSessionStorageAPI is an API that simplifies the CRUD operations with the localStorage and sessionStorage</p>
 
 <p>The class can handle both sessionStorage and localStorage.</p>
 
 <div id="introduction">
-<h2>Introduction</h2>
+## Introduction
 <p>The goal of LocalSessionStorageAPI is to lessen the request to the server. Frequent retrieval of data will be instead delegated to localStorage. Only the data that is scarcely used will be handled by a server API.</p>
 <h2>Purpose</h2>
 
@@ -24,7 +25,7 @@
 <p>E.g.) The entity Book has an instance with data for its properties</p>
 </ul>
 <div id="class">
-<h2>Class</h2>
+## Class
 <h3>Properties</h3>
 <li>
 #### entitiesList
@@ -45,8 +46,9 @@
 <ul>
 <li>Listing of entities: '0entitiesEnum'</li>
 ### Entities
-<li>entity: '{1-9}entityName'</li>
+<li>entity: '{1-9}name'</li>
 <li>number of instances: '{1-9}.0numberOfInstances'</li>
+<li>The properties of the entity: '{1-9}.0propertiesType</li>
 </ul>
 
 </div>
@@ -63,6 +65,7 @@
 
 <p>properties is a listing of all the properties that the entity has.</p>
 <p>The first items are prefixed with a zero. They contain the settings for the api.</p>
+
 <h3>Entities</h3>
 <p>Entities such as persons, employees, products, books and so on begin with {1-9}entity{nameOfEntity}.</p>
 <p>We can have entities between 1 to 9 that are prefixed with 1-9.</p>
@@ -71,13 +74,17 @@
 <li>E.g.) For Video Games: 2.0: "title": "Minecraft", "language":"English", "price":5,"currency":"usd"'</li>
 
 <p>To keep track of the entities we have '0entitiesEnum'. 0EntitiesEnum lists all the entities that we have.</p>
-<li>E.g.) "1":employee,"2":product,"3":book,"4":configuration,"5":date, ...</li>
-<p>Note that each key must be a string. We do that to use the JSON.parse() and JSON.stringify()</p>
-<h3>Middleware</h3>
-<p>Since sessionStorage and localStorage differ only in their scope and lifetime we can use a middleware called middleware(). The helper function accepts a boolean. 'true' stands for sessionStorage and 'false' for localStorage. </p>
-<p>This saves space.</p>
+<li>E.g.) "book": "1", "person": "2", "employee": "3", "customer": "4" ...</li>
+<p>Note that each key must be a string. We do that to use the JSON.parse() and JSON.stringify().</p>
+
 <h3>Handling strings</h3>
 <p>Web storage allows us only to store strings. To efficiently convert the strings to objects we use JSON.parse() and JSON.stringify()</p>
+
+</div>
+
+<div id="bestpractises">
+<h2>Best practises</h2>
+<!-- TODO Should we have a class for each web storage or handle both with one class? Both APIs are very similar and differentiate themeselves only in their lifetime and scope -->
 
 </div>
 </div>
@@ -90,12 +97,31 @@
 </ul>
 </div>
 
-<div id="amendments">
+<div id="testing">
+<h2>Testing</h2>
+<p>To test the API we use cypress. The helper functions are tested with jest.</p>
+<p>GitLabCI runs the tests on a pipeline.</p>
+</div>
+
+<div id="qanda">
+<h2>Q&A</h2>
+<h3>Why not use asynchronous functions?</h3>
+<h3>Why not use the name of the entity as index instead of a number?</h3>
+<p>This would mean a slight increase of storage occupation since all the instances must also be prefixed with with the string of the entity name.</p>
+<p>In terms of the API we would not need to find out the 'entityID'.</p>
+<p>A number instead takes slightlly less space. We want to fill the web storage with as much entries as possible therefore we decide against the processing comfort for the time being.</p>
+
+</div>
+
+<div id="improvements">
 <h2>Amendments</h2>
 <p>Are there ways to improve the API?</p>
 <h3>improvements</h3>
 <ul>
-<li>Grouping the entities</li>
-<p>If we want to delete all items that are derived from an entity we must know their id. Instead of using an array we could use a span like 1-300 instead of an array that contains 300 numbers.</p>
+
+<li>
+Return specifc messages instead of booleans for the asynchronous functions. This makes debugging easier.
+</li>
+
 </ul>
 </div>

@@ -1,4 +1,7 @@
 
+/**
+ * Represents propertiesType and the instance of an entity
+ */
 declare interface Props {
     [key: string]: string;
 }
@@ -22,6 +25,10 @@ declare interface Entities {
         [key: string]: Entity
     }
 
+}
+
+declare interface EntitiesEnum {
+    [key: string]: string;
 }
 
 
