@@ -1,0 +1,25 @@
+{
+  "name": "lssv",
+  "version": "1.0.1",
+  "description": "The vanilla localSessionStorageAPI is an API that simplifies the CRUD operations with the localStorage and sessionStorage",
+  "main": "index.js",
+  "keywords": [
+    "localStorage",
+    "sessionStorage"
+  ],
+  "author": {
+    "email": "jedo66@protonmail.com",
+    "name": "Josemagne",
+    "url": "https://github.com/Josemagne"
+  },
+  "license": "ISC",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "url": "https://github.com/Josemagne/LocalSessionStorageAPI.git",
+    "type": "git"
+  },
+  "typings": "./types.d.ts",
+  "type": "module"
+}
