@@ -45,6 +45,7 @@
 <p>At the instanciation of the class LocalSessionStorageAPI we create the following items:</p>
 <ul>
 <li>Listing of entities: '0entitiesEnum'</li>
+<p>0entitiesEnum is an object where the key is the name of the entity and the value its id</p>
 ### Entities
 <li>entity: '{1-9}name'</li>
 <li>number of instances: '{1-9}.0numberOfInstances'</li>
@@ -84,7 +85,6 @@
 
 <div id="bestpractises">
 <h2>Best practises</h2>
-<!-- TODO Should we have a class for each web storage or handle both with one class? Both APIs are very similar and differentiate themeselves only in their lifetime and scope -->
 
 </div>
 </div>
@@ -100,7 +100,7 @@
 <div id="testing">
 <h2>Testing</h2>
 <p>To test the API we use cypress. The helper functions are tested with jest.</p>
-<p>GitLabCI runs the tests on a pipeline.</p>
+<p>gitlab-runner runs the tests on a pipeline.</p>
 </div>
 
 <div id="qanda">
@@ -110,6 +110,9 @@
 <p>This would mean a slight increase of storage occupation since all the instances must also be prefixed with with the string of the entity name.</p>
 <p>In terms of the API we would not need to find out the 'entityID'.</p>
 <p>A number instead takes slightlly less space. We want to fill the web storage with as much entries as possible therefore we decide against the processing comfort for the time being.</p>
+
+<h3>When to use localStorage and when sessionStorage?</h3>
+<p>sessionStorage will is only available during the sessin while we interact with the tab on the browser. localStorage on the other hand lasts longer.</p>
 
 </div>
 
@@ -121,6 +124,14 @@
 
 <li>
 Return specifc messages instead of booleans for the asynchronous functions. This makes debugging easier.
+</li>
+
+<li>
+Convert storageChoice to non static
+</li>
+
+<li>
+Add ESlint for concistency
 </li>
 
 </ul>

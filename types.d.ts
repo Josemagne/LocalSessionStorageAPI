@@ -2,12 +2,12 @@
 /**
  * Represents propertiesType and the instance of an entity
  */
-declare interface Props {
+export declare interface Props {
     [key: string]: string;
 }
 
 
-declare interface Entity {
+export declare interface Entity {
     id: number;
     name: string;
     props: Props;
@@ -17,7 +17,7 @@ declare interface Entity {
 /**
  * Interface for the object 'entities'
  */
-declare interface Entities {
+export declare interface Entities {
     localStorage: {
         [key: string]: Entity
     };
@@ -27,7 +27,7 @@ declare interface Entities {
 
 }
 
-declare interface EntitiesEnum {
+export declare interface EntitiesEnum {
     [key: string]: string;
 }
 
@@ -36,5 +36,17 @@ declare interface EntitiesEnum {
  *  A collection of all the instances of an Entity
  * 
  *  */
-declare type EntityCollection = Props[];
+export declare type EntityCollection = Props[];
 
+
+export class ILocalSessionStorageAPI<entityName = string, propsType = propsType, storage = Storage> {
+    constructor(entityName = string, propsType = propsType, storage = Storage);
+    storageChoice: Storage = localStorage;
+
+
+}
+
+export interface Condition {
+    entity: string,
+    [key: string]: string | number | Date;
+}

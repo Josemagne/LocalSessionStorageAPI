@@ -1,6 +1,6 @@
 {
   "name": "lssv",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "The vanilla localSessionStorageAPI is an API that simplifies the CRUD operations with the localStorage and sessionStorage",
   "main": "index.js",
   "keywords": [

@@ -1,3 +1,5 @@
+import { Entities, EntitiesEnum, Entity, Props, ILocalSessionStorageAPI, Condition } from './types';
+
 class LocalSessionStorageAPI {
 
     /**
@@ -5,6 +7,7 @@ class LocalSessionStorageAPI {
      * The object's lifetime is during the runtime of the program.
      */
 
+    // TODO The object is not populated --> populate it
     public static entities: Entities = {
         localStorage: {
 
@@ -14,18 +17,14 @@ class LocalSessionStorageAPI {
         }
     };
 
-    // TODO Do we need that?
-    /**
-     * Contains the name of entities
-     */
-    public static entitiesList: string[] = [];
+
 
     /**
      * Defines the default web storage choice that we are handling. If no storage is specified in the methods then we use the value of storageChoice
      * The options are either localStorage or sessionStorage.
      * The predefined storage type is localStorage.
      */
-    public static storageChoice: Storage = localStorage;
+    private storageChoice: Storage = localStorage;
 
 
 
@@ -37,14 +36,9 @@ class LocalSessionStorageAPI {
      */
     constructor(entityName: string, propsType: Props, storage: Storage = localStorage) {
         // set the choice for the default storage
-        LocalSessionStorageAPI.storageChoice = storage;
+        this.storageChoice = storage;
 
         if (storage) {
-            // if 0numberOfInstances is not set then we create it
-            // TODO Do we need that?
-            if (!storage.getItem('0numberOfInstances')) {
-                storage.setItem('0numberOfInstances', '')
-            }
 
             // Keep track of entities
             if (!storage.getItem('0numberOfEntities')) {
@@ -52,20 +46,21 @@ class LocalSessionStorageAPI {
             }
 
             if (!storage.getItem('0entitiesEnum')) {
-                storage.setItem('0entitiesEnum', entityName);
+                let entitiesEnum: EntitiesEnum = {}
+                entitiesEnum[entityName] = "1";
+                storage.setItem('0entitiesEnum', JSON.stringify(entitiesEnum));
 
                 let type: "localStorage" | "sessionStorage";
-                if (storage === localStorage) {
-                    type = "localStorage";
-                } else {
-                    type = 'sessionStorage';
-                }
 
-                LocalSessionStorageAPI.entities[type].entityName.id = 1;
-                LocalSessionStorageAPI.entities[type].entityName.name = entityName;
-                LocalSessionStorageAPI.entities[type].entityName.props = propsType;
-                LocalSessionStorageAPI.entities[type].entityName.numberOfInstances = 0;
             }
+
+            // Props of entity
+            if (!storage.getItem(`1.0propertiesType`)) {
+                storage.setItem(`1.0propertiesType`, JSON.stringify(propsType));
+            }
+
+            // numberOfInstances
+            storage.setItem(`1.0numberOfInstances`, "0")
 
         }
     }
@@ -75,7 +70,7 @@ class LocalSessionStorageAPI {
      * @param entityProps The properties of the entity
      * @param storage Which storage to interact with
      */
-    public static addEntity = (entityName: string, entityProps: Props, storage: Storage = LocalSessionStorageAPI.storageChoice) => {
+    public addEntity = (entityName: string, entityProps: Props, storage: Storage = this.storageChoice) => {
 
         /* Collect and process the data */
 
@@ -108,7 +103,8 @@ class LocalSessionStorageAPI {
      * @param props Obj with the properties of the instance
      * @param storage Type of web storage
      */
-    public static createInstance = (entityName: string, props: Props, storage: Storage = LocalSessionStorageAPI.storageChoice): void => {
+    // TODO make async and return success msg
+    public createInstance = (entityName: string, props: Props, storage: Storage = LocalSessionStorageAPI.storageChoice): void => {
 
         /* Collect the data */
 
@@ -118,24 +114,21 @@ class LocalSessionStorageAPI {
 
         let properties = JSON.stringify(props);
 
+        /* Insert the data into web storage */
         if (instanceID) {
             instanceID++;
+
+            // instance with props and id
+            storage.setItem(`${entityID}.${instanceID}`, properties)
+
+            // Once we finished inserting the new entity we increment numberOfInstances by one
+
+            storage.setItem(`${entityID}.0numberOfInstances`, (instanceID).toString())
+
+            return;
         }
 
-        /* Insert the data into web storage */
 
-        // instance with props and id
-        storage.setItem(`${entityID}.${instanceID}`, properties)
-
-
-        // Once we finished inserting the new entity we increment numberOfInstances by one
-
-        let numberOfInstances = storage.getItem(`${entityID}.0numberOfInstances`);
-
-        if (numberOfInstances) {
-
-            storage.setItem(`${entityID}.0numberOfInstances`, numberOfInstances)
-        }
     }
 
 
@@ -149,7 +142,7 @@ class LocalSessionStorageAPI {
      * @param storage 
      * @returns Object that represents an instance of an entity
      */
-    public static getInstance = (entityName: string, id: number, storage: Storage = LocalSessionStorageAPI.storageChoice): Props | null => {
+    public getInstance = (entityName: string, id: number, storage: Storage = LocalSessionStorageAPI.storageChoice): Props | null => {
 
         let entityID = this.getEntityID(entityName, storage);
 
@@ -171,7 +164,7 @@ class LocalSessionStorageAPI {
      * @param entity Entity whose instances we want to retrieve
      * @param storage What kind of web storage we want to access
      */
-    public static getInstances = (entityName: string, storage: Storage = LocalSessionStorageAPI.storageChoice): Props[] | null => {
+    public getInstances = (entityName: string, storage: Storage = this.storageChoice): Props[] | null => {
 
         let instances: Props[] = []
 
@@ -208,7 +201,7 @@ class LocalSessionStorageAPI {
     * @param entityName Name of entity
     * @param storage Type of web storage
     */
-    private static getProperties = (entityName: string, storage: Storage = LocalSessionStorageAPI.storageChoice): Props | null => {
+    private getProperties = (entityName: string, storage: Storage = LocalSessionStorageAPI.storageChoice): Props | null => {
 
         // Obj that gets returned at the end
         let properties: Props;
@@ -229,6 +222,13 @@ class LocalSessionStorageAPI {
 
     }
 
+    /**
+     * Retrieves instances that fulfill certain conditions
+     */
+    public getWithCondition = (condition: Condition) => {
+
+    }
+
 
     /* UPDATE */
     /* Here are all the methods that are related to editing data */
@@ -238,7 +238,7 @@ class LocalSessionStorageAPI {
      * @param entityName Name of entity
      * @param storage Type of web storage
      */
-    public static updateEntity = async (entityName: string, newProps: Props, storage: Storage = LocalSessionStorageAPI.storageChoice): Promise<boolean> => {
+    public updateEntity = async (entityName: string, newProps: Props, storage: Storage = LocalSessionStorageAPI.storageChoice): Promise<boolean> => {
 
         const entityID = this.getEntityID(entityName, storage);
 
@@ -261,7 +261,7 @@ class LocalSessionStorageAPI {
      * @param instanceProps New props for the instance
      * @param storage Type of web storage
      */
-    public static updateInstance = async (entityName: string, instanceID: number, newProps: Props, storage: Storage = LocalSessionStorageAPI.storageChoice): Promise<boolean> => {
+    public updateInstance = async (entityName: string, instanceID: number, newProps: Props, storage: Storage = LocalSessionStorageAPI.storageChoice): Promise<boolean> => {
         let entityID = this.getEntityID(entityName, storage);
 
         let instance = storage.getItem(`${entityID}.${instanceID}`);
@@ -281,7 +281,7 @@ class LocalSessionStorageAPI {
      * @param newProps New props for the instances
      * @param storage 
      */
-    public static updateInstances = async (entityName: string, instanceID: number, newProps: Props, storage: Storage = LocalSessionStorageAPI.storageChoice): Promise<boolean> => {
+    public updateInstances = async (entityName: string, instanceID: number, newProps: Props, storage: Storage = LocalSessionStorageAPI.storageChoice): Promise<boolean> => {
 
         let entityID = this.getEntityID(entityName, storage);
 
@@ -307,6 +307,10 @@ class LocalSessionStorageAPI {
         return false;
     }
 
+    public updateWithCondition = () => {
+
+    }
+
 
     /* DELETE */
     /* Here are the methods that are related with deleting data */
@@ -315,14 +319,41 @@ class LocalSessionStorageAPI {
      * Deletes all instances of an entity
      * @param entity Entity we want to delete
      */
-    public static deleteEntity = (entityName: Entity, storage: boolean = false) => {
-        if (storage) {
+    public deleteEntity = (entityName: string, storage: Storage = LocalSessionStorageAPI.storageChoice = localStorage) => {
+        const entityID = this.getEntityID(entityName, storage);
+
+        const numberOfInstances = this.getNumberOfInstances(entityName, storage);
+
+        const keys = Object.keys(storage);
+
+        if (numberOfInstances) {
+
+            for (let i = 0; i < numberOfInstances; i++) {
+
+                // TODO finish that
+                if (keys[i])
+                    storage.removeItem(keys[i]);
+            }
 
         }
 
-        else {
+    }
 
-        }
+    public deleteInstance = () => {
+
+    }
+
+    /**
+     * Deletes an entire storage
+     */
+    public deleteStorage = (storage: Storage = LocalSessionStorageAPI.storageChoice) => {
+        storage.clear();
+    }
+
+    /**
+     * Deletes certain instances if certain conditions are fulfilled
+     */
+    public deleteWithCondition = () => {
 
     }
 
@@ -334,13 +365,15 @@ class LocalSessionStorageAPI {
      * Returns the total number of instances for an entity
      * We have an item with the key 'numberOfInstances' on each entity that stores how much instances an entity has
      */
-    private static getNumberOfInstances = (entityName: string, storage: Storage = LocalSessionStorageAPI.storageChoice): number | null => {
+    private getNumberOfInstances = (entityName: string, storage: Storage = LocalSessionStorageAPI.storageChoice): number | null => {
         let id = this.getEntityID(entityName);
+
         let result: number;
 
-        if ("string" === typeof id) {
 
-            let item = storage.getItem(`${id}0numberOfInstances`);
+        if (id) {
+
+            let item = storage.getItem(`${id}.0numberOfInstances`);
 
             // Check if we got a string and the item thus exists
             if (item) {
@@ -359,7 +392,7 @@ class LocalSessionStorageAPI {
      * Returns the number of entities
      * @param storage Type of web storage
      */
-    private static getNumberOfEntities = (storage: Storage): number => {
+    private getNumberOfEntities = (storage: Storage): number => {
         // Contains the keys of 0entitiesEnum
         let keys: string[] = [];
         // The biggest number in keys indicating the number of entities
@@ -382,7 +415,7 @@ class LocalSessionStorageAPI {
      * @param storage Type of web storage
      * @returns ID of the entity
      */
-    private static getEntityID = (entityName: string, storage: Storage = LocalSessionStorageAPI.storageChoice): string | null => {
+    private getEntityID = (entityName: string, storage: Storage = LocalSessionStorageAPI.storageChoice): string | null => {
 
         let entitiesEnum = storage.getItem("0entitiesEnum");
         let entityObj: EntitiesEnum = {};
@@ -395,7 +428,7 @@ class LocalSessionStorageAPI {
 
 
     // TODO finish updateProps()
-    private static updateProps = (newProps: Props, oldProps: Props) => {
+    private updateProps = (newProps: Props, oldProps: Props) => {
         /**
          * Properties that are in both objects 
          */
@@ -409,23 +442,6 @@ class LocalSessionStorageAPI {
 
     }
 
-
-
-    // TODO In the future add a constraint that the beginnig of the keys should not have a number
-    // public static testForNumbers = (key: string): boolean => {
-
-    // }
-
-    // TODO Entities that are used frequently should be stored in localStorage.
-    // public static persistFrequentEntities = (): void => {
-
-    // }
-
-
-
-
 }
-
-// TODO Should we use a middleware?
 
 export default LocalSessionStorageAPI;

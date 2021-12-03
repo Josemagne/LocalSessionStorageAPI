@@ -1,5 +1,7 @@
 const { resolve } = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserWebpackPlugin = require("terser-webpack-plugin");
+const webpack = require("webpack");
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -9,21 +11,37 @@ const config = {
     index: "./LocalSessionStorageAPI.ts",
   },
   output: {
-    path: resolve(__dirname, "lssapi"),
-    filename: "lssapi.js",
+    path: resolve(__dirname, "dist"),
+    filename: "bundle.js",
     publicPath: "/",
   },
   resolve: {
-    extensions: [".js", ".ts"],
+    extensions: [".tsx", ".js", ".jsx", ".ts"],
   },
   module: {
     rules: [
+      // ANCHOR js
       {
-        test: /\.ts?$/,
+        test: /\.js$/,
+        loader: "babel-loader",
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.tsx?$/,
         use: "ts-loader",
         exclude: /node_modules/,
       },
     ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: resolve(__dirname, "index.html"),
+      filename: "index.html",
+      inject: "body",
+    }),
+  ],
+  devServer: {
+    historyApiFallback: true,
   },
 };
 
@@ -37,7 +55,7 @@ if (isProduction) {
     compress: true,
     hot: true,
     host: "localhost",
-    port: 8090,
+    port: 8888,
   };
 }
 
