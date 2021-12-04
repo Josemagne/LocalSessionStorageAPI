@@ -1,28 +1,35 @@
-import LocalSessionStorageAPI from "../../index";
+import lssv from "../../index";
+/* The tests are ordered like in the source code inspired by the abbreviation CRUD. First come the operations that are about storing data (CREATE) and so on.  */
 
-/* The tests are ordered like in the source code inspired by the abbreviation CRUD. First come the operations that are about storing data (CREATE) and so on. The helper functions that do not need web storage API are tested with jest */
+let propsType = {
+    name: "string",
+    prename: "string",
+    age: "number",
+    place: "string"
+
+}
+
+beforeEach(() => {
+    cy.visit("https://www.google.com");
+    cy.log("On page www.google.com");
+
+
+
+});
+
+afterEach(() => {
+    cy.log("cleared the storage.");
+    new lssv().deleteStorage()
+})
+
+
 
 /* CREATE */
-describe("should have items in localStorage", () => {
-    beforeEach(() => {
-        cy.visit("https://www.google.com");
+
+describe("constructor()", () => {
 
 
-        // Initialize
-        let propsType = {
-            name: "string",
-            prename: "string",
-            age: "number",
-            place: "string"
-
-        }
-
-        const s = new LocalSessionStorageAPI(localStorage);
-    });
-
-    afterEach(() => {
-        new LocalSessionStorageAPI().deleteStorage()
-    })
+    const s = new lssv(localStorage);
 
     it("Should contain 'numberOfEntities' in localStorage", () => {
         expect(localStorage.getItem('numberOfEntities')).to.equal("0");
@@ -36,22 +43,58 @@ describe("should have items in localStorage", () => {
 
 
 
-/* HELPER METHODS */
 
+describe("CREATE", () => {
+
+    const s = new lssv(localStorage);
+    s.addEntity("persons", propsType)
+
+    s.createInstance("persons", { name: "d", prename: "d", age: "3", place: "dg" })
+
+    it("addEntity()", () => {
+
+        const s = new lssv();
+        s.addEntity("persons", propsType);
+        // After adding an entity we should have 1
+        expect(localStorage.getItem('numberOfEntities'), "numberOfEntities() should increment by 1").to.be.equal("1")
+    })
+
+    it("createInstance()", () => {
+        expect(localStorage.getItem("1.1"), "getEntityID() should return the right item").to.be.equal("d,d,3,dg");
+        expect(localStorage.getItem('1.numberOfInstance'), "'numberOfInstances' should be incremented by 1").to.be.equal("1")
+    })
+
+})
+
+
+/* READ */
+
+describe("GET", () => {
+    it("getInstance()", () => {
+
+    })
+    it("getInstances()", () => {
+
+    })
+
+    it("getWithCondition", () => {
+
+    })
+
+})
+
+/* UPDATE */
+describe("UPDATE", () => {
+    it("updateEntity", () => {
+
+    })
+
+})
 
 /* Stress Test */
 
 describe("should have 10'000 instances in localStorage", () => {
-    beforeEach(() => {
-        cy.visit("https://www.google.com");
 
-
-
-    });
-
-    afterEach(() => {
-        new LocalSessionStorageAPI().deleteStorage()
-    })
 
     it("Should have 10'000 items", () => {
 
@@ -65,7 +108,7 @@ describe("should have 10'000 instances in localStorage", () => {
 
         }
 
-        const s = new LocalSessionStorageAPI(localStorage);
+        const s = new lssv(localStorage);
 
         s.addEntity("persons", propsType);
 

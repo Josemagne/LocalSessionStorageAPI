@@ -122,7 +122,6 @@ class lssv {
      * @param storage Type of web storage
      * @returns Promise Returns a promise based true for success and false for failure.
      */
-    // TODO make async and return success msg
     public createInstance = async (entityName: string, props: Props, storage = this.storageChoice): Promise<boolean> => {
 
         /* Collect the data */
@@ -410,7 +409,7 @@ class lssv {
      * Returns the total number of instances for an entity
      * We have an item with the key 'numberOfInstances' on each entity that stores how much instances an entity has
      */
-    private getNumberOfInstances = (entityName: string, storage = this.storageChoice): number | null => {
+    private getNumberOfInstances = (entityName: string, storage = this.storageChoice): number => {
         let id = this.getEntityID(entityName);
 
         let result: number;
@@ -428,7 +427,7 @@ class lssv {
 
         }
 
-        return null;
+        return 0;
 
     }
 

@@ -4,8 +4,8 @@
   "description": "<p>localSessionStorageAPI is an API that simplifies the CRUD operations with the localStorage and sessionStorage</p>",
   "main": "index.js",
   "scripts": {
-    "test:cypress-headless": "./node_modules/.bin/cypress run --headless",
-    "test:cypress-headed": "./node_modules/.bin/cypress run --headed --browser electron --no-exit ",
+    "test-headless": "./node_modules/.bin/cypress run --headless",
+    "test-headed": "./node_modules/.bin/cypress run --headed --browser electron --no-exit ",
     "build": " npx tsc --build",
     "test": "NODE_ENV=development webpack-dev-server"
   },
