@@ -6,7 +6,7 @@
   "scripts": {
     "test:cypress-headless": "./node_modules/.bin/cypress run --headless",
     "test:cypress-headed": "./node_modules/.bin/cypress run --headed --browser electron --no-exit ",
-    "build": " NODE_ENV=production webpack",
+    "build": " npx tsc --build",
     "test": "NODE_ENV=development webpack-dev-server"
   },
   "keywords": [
@@ -24,6 +24,7 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.11.11",
     "cypress": "^9.1.0",
+    "dotenv": "^10.0.0",
     "eslint": "^8.3.0",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.4",

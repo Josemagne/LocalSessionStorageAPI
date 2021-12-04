@@ -125,3 +125,5 @@ Do you have improvements to the api? The project is still in development. If you
 - [ ] Restrict the possible arguments of 'entityName' to the ones defined in the web storage.
 
 - [ ] Minify code in the compilation process.
+
+- [ ] Refactor the code that checkInstance() allows multiple types for a property

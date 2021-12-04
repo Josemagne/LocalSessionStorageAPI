@@ -25,9 +25,7 @@ class lssv {
 
     // initiate
     /**
-     * In order to work with the API we must know which properties the entity has.
-     * @example An entity Book has for example the properties: 'title', 'pages', 'language',
-     * @param props Object that contains the props of of the entity
+     * @param storage Type of web storage the object will use by default.
      */
     constructor(storage: Storage = localStorage) {
         // set the choice for the default storage
@@ -48,6 +46,8 @@ class lssv {
 
         }
     }
+
+
 
     /**
      * 
@@ -400,6 +400,13 @@ class lssv {
     /* Helper functions can be accessed from the localStorage and sessionStorage methods */
 
     /**
+     * Populates 'entities' with data
+     */
+    private loadData = () => {
+
+    }
+
+    /**
      * Returns the total number of instances for an entity
      * We have an item with the key 'numberOfInstances' on each entity that stores how much instances an entity has
      */
@@ -408,7 +415,7 @@ class lssv {
 
         let result: number;
 
-
+        // If the entity exists
         if (id) {
 
             let item = storage.getItem(`${id}.numberOfInstances`);

@@ -14,18 +14,6 @@ export declare interface Entity {
     numberOfInstances: number;
 }
 
-/**
- * Interface for the object 'entities'
- */
-export declare interface Entities {
-    localStorage: {
-        [key: string]: Entity
-    };
-    sessionStorage: {
-        [key: string]: Entity
-    }
-
-}
 
 export declare interface EntitiesEnum {
     [key: string]: string;

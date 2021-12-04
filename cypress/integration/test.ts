@@ -17,8 +17,12 @@ describe("should have items in localStorage", () => {
 
         }
 
-        const lssv = new LocalSessionStorageAPI(localStorage);
+        const s = new LocalSessionStorageAPI(localStorage);
     });
+
+    afterEach(() => {
+        new LocalSessionStorageAPI().deleteStorage()
+    })
 
     it("Should contain 'numberOfEntities' in localStorage", () => {
         expect(localStorage.getItem('numberOfEntities')).to.equal("0");
@@ -40,10 +44,19 @@ describe("should have items in localStorage", () => {
 describe("should have 10'000 instances in localStorage", () => {
     beforeEach(() => {
         cy.visit("https://www.google.com");
+
+
+
     });
+
+    afterEach(() => {
+        new LocalSessionStorageAPI().deleteStorage()
+    })
 
     it("Should have 10'000 items", () => {
 
+
+        // Initialize
         let propsType = {
             name: "string",
             prename: "string",
@@ -52,14 +65,19 @@ describe("should have 10'000 instances in localStorage", () => {
 
         }
 
-        const lssv = new LocalSessionStorageAPI(localStorage);
+        const s = new LocalSessionStorageAPI(localStorage);
 
-        lssv.addEntity("persons", propsType);
+        s.addEntity("persons", propsType);
 
+        let errors = 0;
         for (let i = 0; i < 10000; i++) {
-            lssv.createInstance("persons", propsType);
+            let result = s.createInstance("persons", propsType).then((res) => {
+                if (!res) errors++;
+            });
+
         }
 
+        cy.log("the errors are: " + errors.toString())
         expect(Object.keys(localStorage).length).to.be.greaterThan(10000)
     })
 })
