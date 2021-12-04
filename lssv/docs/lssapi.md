@@ -48,7 +48,7 @@ if (!storage.getItem("0numberOfEntities")) {
 
 </dd>
 </dl>
-- Listing of entities: '0entitiesEnum': </br>
+- Listing of entities: '0entitiesEnum':
 
 - Number of entities: ''0numberOfEntities'
 - number of instances: '{1-9}.0numberOfInstances'

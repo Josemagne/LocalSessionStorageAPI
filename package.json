@@ -6,7 +6,6 @@
   "scripts": {
     "test:cypress-headless": "./node_modules/.bin/cypress run --headless",
     "test:cypress-headed": "./node_modules/.bin/cypress run --headed --browser electron --no-exit ",
-    "test-jest": "jest --coverage",
     "build": " NODE_ENV=production webpack",
     "test": "NODE_ENV=development webpack-dev-server"
   },
@@ -28,9 +27,7 @@
     "eslint": "^8.3.0",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.4",
-    "jest": "^27.4.3",
     "terser-webpack-plugin": "^5.2.5",
-    "ts-jest": "^27.0.7",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.2",
     "webpack": "^5.64.4",

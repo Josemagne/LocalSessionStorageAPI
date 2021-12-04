@@ -32,13 +32,10 @@ export declare interface EntitiesEnum {
 }
 
 
+
 /**
- *  A collection of all the instances of an Entity
- * 
- *  */
-export declare type EntityCollection = Props[];
-
-
+ * Interface for the class LocalSessionStorageAPI
+ */
 export class ILocalSessionStorageAPI<entityName = string, propsType = propsType, storage = Storage> {
     constructor(entityName = string, propsType = propsType, storage = Storage);
     storageChoice: Storage = localStorage;
