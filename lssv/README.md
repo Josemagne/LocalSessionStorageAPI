@@ -31,6 +31,7 @@ Here are the explanation for terms that are used in the code. From here on the a
 | Entity   | An entity is an object that contains properties. |
 | Instance | An instance is                                   |
 | Property | A property defines a part of an entity.          |
+| Object   | An object is a simple JavaScript object.         |
 
 ### Examples
 

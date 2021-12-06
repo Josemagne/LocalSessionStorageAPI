@@ -157,6 +157,20 @@ class lssv {
 
     }
 
+    /**
+     * Loop that uses createInstance()
+     * @param entityName Name of entity
+     * @param props Properties of the instance
+     * @param storage Type of web storage
+     */
+    public createInstances = async (entityName: string, props: Props[], storage: Storage = this.storageChoice): Promise<boolean> => {
+
+        for (let i = 0; i < props.length; i++) {
+            this.createInstance(entityName, props[i], storage);
+        }
+
+    }
+
 
     // TODO finish
     public createObject = () => {
@@ -167,36 +181,14 @@ class lssv {
     /* READ */
     /* Here are all the methods that are about reading data */
 
-    /**
-     * Gets a single instance from an entity
-     * @param entityName Name of entity
-     * @param id Id of the instance
-     * @param storage 
-     * @returns Object that represents an instance of an entity
-     */
-    public getInstance = (entityName: string, id: number, storage = this.storageChoice): Props | null => {
 
-        let entityID = this.getEntityID(entityName, storage);
-
-        if (entityID) {
-
-            let instance = storage.getItem(`${entityID}.${id}`);
-
-            if (instance) {
-                return JSON.parse(instance);
-            }
-        }
-
-        return null;
-
-    }
 
     /**
      * Get all the instances of an entity
      * @param entity Entity whose instances we want to retrieve
      * @param storage What kind of web storage we want to access
      */
-    public getInstances = (entityName: string, storage: Storage = this.storageChoice): Props[] | null => {
+    public getInstances = async (entityName: string, storage: Storage = this.storageChoice): Promise<Props[] | null> => {
 
         let instances: Props[] = []
 
@@ -213,7 +205,7 @@ class lssv {
 
                     // If the instance is not null
                     if (instance) {
-                        instances.push(JSON.parse(instance));
+                        await instances.push(JSON.parse(instance));
                     }
 
                 }
