@@ -29,21 +29,20 @@ declare class lssv {
      * @returns Promise Returns a promise based true for success and false for failure.
      */
     createInstance: (entityName: string, props: Props, storage?: Storage) => Promise<boolean>;
-    createObject: () => void;
     /**
-     * Gets a single instance from an entity
+     * Loop that uses createInstance()
      * @param entityName Name of entity
-     * @param id Id of the instance
-     * @param storage
-     * @returns Object that represents an instance of an entity
+     * @param props Properties of the instance
+     * @param storage Type of web storage
      */
-    getInstance: (entityName: string, id: number, storage?: Storage) => Props | null;
+    createInstances: (entityName: string, props: Props[], storage?: Storage) => Promise<boolean>;
+    createObject: () => void;
     /**
      * Get all the instances of an entity
      * @param entity Entity whose instances we want to retrieve
      * @param storage What kind of web storage we want to access
      */
-    getInstances: (entityName: string, storage?: Storage) => Props[] | null;
+    getInstances: (entityName: string, storage?: Storage) => Promise<Props[] | null>;
     /**
      * Retrieves instances that fulfill certain conditions
      */
@@ -93,6 +92,7 @@ declare class lssv {
     deleteObject: () => void;
     migrateEntities: () => void;
     migrateInstances: () => void;
+    convertJSON: () => void;
     /**
      * Populates 'entities' with data
      */

@@ -50,66 +50,85 @@ class lssv {
 
 
     /**
-     * 
+     * Creates an entity
+     * @param entityName Name of the entity
      * @param entityProps The properties of the entity
      * @param storage Which storage to interact with
      */
-    public addEntity = (entityName: string, entityProps: Props, storage: Storage = this.storageChoice) => {
+    public addEntity = async (entityName: string, entityProps: Props, storage: Storage = this.storageChoice): Promise<boolean> => {
 
+
+        // Check that the entity does not already exist
 
         /* Collect and process the data */
 
         // id
-        let id = this.getNumberOfEntities(storage);
+        let entityID = this.getNumberOfEntities(storage);
 
 
-        if (id) {
+        if (entityID) {
+
+            // increment id
+            entityID++;
 
             // Props of entity
-            if (!storage.getItem(`${id}.propertiesType`)) {
-                storage.setItem(`${id}.propertiesType`, JSON.stringify(entityProps));
+            if (!storage.getItem(`${entityID}.propertiesType`)) {
+                await storage.setItem(`${entityID}.propertiesType`, JSON.stringify(entityProps));
             }
 
             // numberOfInstances
-            storage.setItem(`${id}.numberOfInstances`, "0")
-
-        }
-
-        // properties
-        let properties = JSON.stringify(entityProps);
-
-        /* Insert the data */
-
-        // Name
-        storage.setItem(`${id}.entityName`, entityName);
-
-        // numberOfInstances
-        storage.setItem(`${id}.numberOfInstances`, "0");
-
-        // propertiesType
-        storage.setItem(`${id}.propertiesType`, properties);
-
-        // Once the entity was added then we increment 'numberOfentities
-        const before = storage.getItem('numberOfEntities');
-        if (before) {
-
-            storage.setItem('numberOfEntities', (parseInt(before) + 1).toString())
-
-        }
+            await storage.setItem(`${entityID}.numberOfInstances`, "0")
 
 
-        // Add the entity to the class property 'entities'    
-        if (id) {
+
+            // properties
+            let properties = JSON.stringify(entityProps);
+
+            /* Insert the data */
+
+            // Name
+            await storage.setItem(`${entityID}.entityName`, entityName);
+
+            // numberOfInstances
+            await storage.setItem(`${entityID}.numberOfInstances`, "0");
+
+            // propertiesType
+            await storage.setItem(`${entityID}.propertiesType`, properties);
+
+            /* entitiesEnum */
+            let entitiesEnum = storage.getItem("entitiesEnum");
+            if (entitiesEnum) {
+                // Convert string to object
+                let parsedEnum: EntitiesEnum = JSON.parse(entitiesEnum);
+
+                // Add the properties
+                parsedEnum[entityID] = { id: entityID, name: entityName, props: entityProps }
+            }
+
+
+            // Once the entity was added then we increment 'numberOfentities
+            const before = await storage.getItem('numberOfEntities');
+            if (before) {
+
+                await storage.setItem('numberOfEntities', (parseInt(before) + 1).toString())
+
+            }
+
+
+            // Add the entity to the class property 'entities'    
 
             const newEntity: Entity = {
                 name: entityName,
-                id: id,
-                numberOfInstances: 0,
+                id: entityID,
+
                 props: entityProps
             }
             this.entities.push(newEntity);
+
+            return Promise.resolve(true);
         }
 
+        return Promise.reject(false);
     }
 
     /* CREATE */
@@ -133,15 +152,14 @@ class lssv {
         let values = Object.values(props);
 
         /* Insert the data into web storage */
-        if (instanceID) {
-            instanceID++;
+        instanceID.then((instance_id) => {
 
-            const checkedInstance = this.checkInstance(entityName, values);
+            instance_id++;
 
-            if (await checkedInstance.then((value) => { return true === value })) {
+            this.checkInstance(entityName, values).then(() => {
                 // Insert values of instance 
                 storage.setItem(`${entityID}.${instanceID}`, values.join(','));
-            }
+            })
 
 
             // Once we finished inserting the new entity we increment numberOfInstances by one
@@ -149,7 +167,7 @@ class lssv {
             storage.setItem(`${entityID}.numberOfInstances`, (instanceID).toString())
 
             return true;
-        }
+        });
 
         // If the entity does not exist
         return false;
@@ -166,8 +184,19 @@ class lssv {
     public createInstances = async (entityName: string, props: Props[], storage: Storage = this.storageChoice): Promise<boolean> => {
 
         for (let i = 0; i < props.length; i++) {
-            this.createInstance(entityName, props[i], storage);
+            this.createInstance(entityName, props[i], storage).then((result) => {
+                if (false === result) {
+                    return false;
+                }
+            })
+                .catch((err) => {
+                    throw new Error("We couldn't insert the instance: " + JSON.stringify(props[i] + " /n Here is the error Code: " + err)
+                    )
+                })
         }
+
+        // If we got here then it means that all instances were created successfully
+        return true;
 
     }
 
@@ -297,22 +326,29 @@ class lssv {
 
         if (entityID && numberOfInstances) {
 
-            for (let i = 1; i <= numberOfInstances; i++) {
+            numberOfInstances.then((instanceNumber) => {
 
-                let instance = storage.getItem(`${entityID}.${instanceID}`);
 
-                // Test if instance exists
-                if (instance) {
+                for (let i = 1; i <= instanceNumber; i++) {
 
-                    storage.setItem(`${entityID}.${instanceID}`, JSON.stringify(newProps))
+                    let instance = storage.getItem(`${entityID}.${instanceID}`);
 
-                    return true;
+                    // Test if instance exists
+                    if (instance) {
+
+                        storage.setItem(`${entityID}.${instanceID}`, JSON.stringify(newProps))
+
+                        return true;
+                    }
+
                 }
+            })
 
-            }
+            return false;
         }
 
         return false;
+
     }
 
     public updateWithCondition = () => {
@@ -386,6 +422,11 @@ class lssv {
 
     }
 
+    // TODO finish
+    public convertJSON = () => {
+
+    }
+
 
     /* HELPER FUNCTIONS */
     /* Helper functions can be accessed from the localStorage and sessionStorage methods */
@@ -401,7 +442,7 @@ class lssv {
      * Returns the total number of instances for an entity
      * We have an item with the key 'numberOfInstances' on each entity that stores how much instances an entity has
      */
-    private getNumberOfInstances = (entityName: string, storage = this.storageChoice): number => {
+    private getNumberOfInstances = async (entityName: string, storage = this.storageChoice): Promise<number> => {
         let id = this.getEntityID(entityName);
 
         let result: number;
@@ -419,7 +460,7 @@ class lssv {
 
         }
 
-        return 0;
+        return Promise.reject(new Error("The entity does not exist."));
 
     }
 
@@ -441,9 +482,9 @@ class lssv {
     }
 
     /**
-* Gets the properties of an entity
-* @param entityName Name of entity
-* @param storage Type of web storage
+  * Gets the properties of an entity
+  * @param entityName Name of entity
+  * @param storage Type of web storage
 */
     private getProperties = (entityName: string, storage: Storage = this.storageChoice): Props | null => {
 
@@ -480,8 +521,8 @@ class lssv {
         let entityObj: EntitiesEnum = {};
 
         if (entitiesEnum) {
-            entityObj = JSON.parse(entitiesEnum);
-            return entityObj[entityName]
+            let parsedEnum = JSON.parse(entitiesEnum);
+            return parsedEnum[entityName]
         }
 
         // The entity does not exist i.e. it was not added
@@ -513,6 +554,23 @@ class lssv {
 
     }
 
+    private checkEntity = async (entityName: string, storage: Storage = this.storageChoice): Promise<boolean> => {
+        // Check if the entity already exists
+        let entitiesEnum = storage.getItem("entitiesEnum");
+
+        if (entitiesEnum) {
+            let parsedEnum = await JSON.parse(entitiesEnum);
+
+            // If the entity already exist
+            if (parsedEnum[entityName]) {
+                return Promise.resolve(true);
+            }
+
+        }
+
+        return false;
+    }
+
     /**
      * Is only invoked by createInstance(). Tests if the instance values respect the specification at propertiesType.
      * @param entityName Name of entity
@@ -530,18 +588,28 @@ class lssv {
         }
 
         // If the entity does not exist
-        else throw new Error("The entity does not exist");
+        Promise.reject(new Error("The entity does not exist"));
 
         // Check types
         for (let i = 0; i < propsArray.length; i++) {
             if (propsArray[i] !== typeof instanceValues[i]) {
-                throw new Error(`${instanceValues[i]} is not of the type ${propsArray[i]}`);
+                return Promise.reject(new Error(`${instanceValues[i]} is not of the type ${propsArray[i]}`));
             }
         }
 
-        return true;
+        return Promise.resolve(true);
 
     }
+
+    // TODO finish
+    // private encryptInstance = async (): Promise<boolean> => {
+
+    // }
+
+    // TODO finish
+    // private encryptStorage = async (): Promise<boolean> => {
+
+    // }
 
 }
 

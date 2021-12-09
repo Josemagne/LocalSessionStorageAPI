@@ -106,7 +106,6 @@ var lssv = /** @class */ (function () {
          * @param storage Type of web storage
          * @returns Promise Returns a promise based true for success and false for failure.
          */
-        // TODO make async and return success msg
         this.createInstance = function (entityName, props, storage) {
             if (storage === void 0) { storage = _this.storageChoice; }
             return __awaiter(_this, void 0, void 0, function () {
@@ -136,29 +135,41 @@ var lssv = /** @class */ (function () {
                 });
             });
         };
+        /**
+         * Loop that uses createInstance()
+         * @param entityName Name of entity
+         * @param props Properties of the instance
+         * @param storage Type of web storage
+         */
+        this.createInstances = function (entityName, props, storage) {
+            if (storage === void 0) { storage = _this.storageChoice; }
+            return __awaiter(_this, void 0, void 0, function () {
+                var _loop_1, this_1, i;
+                return __generator(this, function (_a) {
+                    _loop_1 = function (i) {
+                        this_1.createInstance(entityName, props[i], storage).then(function (result) {
+                            if (false === result) {
+                                return false;
+                            }
+                        })
+                            .catch(function (err) {
+                            throw new Error("We couldn't insert the instance: " + JSON.stringify(props[i] + " /n Here is the error Code: " + err));
+                        });
+                    };
+                    this_1 = this;
+                    for (i = 0; i < props.length; i++) {
+                        _loop_1(i);
+                    }
+                    // If we got here then it means that all instances were created successfully
+                    return [2 /*return*/, true];
+                });
+            });
+        };
         // TODO finish
         this.createObject = function () {
         };
         /* READ */
         /* Here are all the methods that are about reading data */
-        /**
-         * Gets a single instance from an entity
-         * @param entityName Name of entity
-         * @param id Id of the instance
-         * @param storage
-         * @returns Object that represents an instance of an entity
-         */
-        this.getInstance = function (entityName, id, storage) {
-            if (storage === void 0) { storage = _this.storageChoice; }
-            var entityID = _this.getEntityID(entityName, storage);
-            if (entityID) {
-                var instance = storage.getItem("".concat(entityID, ".").concat(id));
-                if (instance) {
-                    return JSON.parse(instance);
-                }
-            }
-            return null;
-        };
         /**
          * Get all the instances of an entity
          * @param entity Entity whose instances we want to retrieve
@@ -166,22 +177,36 @@ var lssv = /** @class */ (function () {
          */
         this.getInstances = function (entityName, storage) {
             if (storage === void 0) { storage = _this.storageChoice; }
-            var instances = [];
-            var entityID = _this.getEntityID(entityName, storage);
-            if (entityID) {
-                var numberOfInstances = storage.getItem("".concat(entityID, ".numberOfInstances"));
-                if (numberOfInstances)
-                    for (var i = 1; i <= parseInt(numberOfInstances); i++) {
-                        var instance = storage.getItem("".concat(entityID, ".").concat(i));
-                        // If the instance is not null
-                        if (instance) {
-                            instances.push(JSON.parse(instance));
-                        }
+            return __awaiter(_this, void 0, void 0, function () {
+                var instances, entityID, numberOfInstances, i, instance;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            instances = [];
+                            entityID = this.getEntityID(entityName, storage);
+                            if (!entityID) return [3 /*break*/, 5];
+                            numberOfInstances = storage.getItem("".concat(entityID, ".numberOfInstances"));
+                            if (!numberOfInstances) return [3 /*break*/, 4];
+                            i = 1;
+                            _a.label = 1;
+                        case 1:
+                            if (!(i <= parseInt(numberOfInstances))) return [3 /*break*/, 4];
+                            instance = storage.getItem("".concat(entityID, ".").concat(i));
+                            if (!instance) return [3 /*break*/, 3];
+                            return [4 /*yield*/, instances.push(JSON.parse(instance))];
+                        case 2:
+                            _a.sent();
+                            _a.label = 3;
+                        case 3:
+                            i++;
+                            return [3 /*break*/, 1];
+                        case 4: return [2 /*return*/, instances];
+                        case 5: 
+                        // If no instances were found
+                        return [2 /*return*/, null];
                     }
-                return instances;
-            }
-            // If no instances were found
-            return null;
+                });
+            });
         };
         /**
          * Retrieves instances that fulfill certain conditions
@@ -316,6 +341,9 @@ var lssv = /** @class */ (function () {
         };
         this.migrateInstances = function () {
         };
+        // TODO finish
+        this.convertJSON = function () {
+        };
         /* HELPER FUNCTIONS */
         /* Helper functions can be accessed from the localStorage and sessionStorage methods */
         /**
@@ -340,7 +368,7 @@ var lssv = /** @class */ (function () {
                     return result;
                 }
             }
-            return null;
+            return 0;
         };
         /**
          * Returns the number of entities that is stored in 'numberOfEntities'.

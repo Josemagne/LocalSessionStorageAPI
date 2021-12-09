@@ -11,12 +11,15 @@ export declare interface Entity {
     id: number;
     name: string;
     props: Props;
-    numberOfInstances: number;
+
 }
 
 
+/**
+ * Object with key being the key of entity and value an object with data of entity
+ */
 export declare interface EntitiesEnum {
-    [key: string]: string;
+    [key: string]: Entity;
 }
 
 
