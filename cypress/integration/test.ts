@@ -14,7 +14,6 @@ beforeEach(() => {
     cy.log("On page www.google.com");
 
 
-
 });
 
 afterEach(() => {
@@ -52,8 +51,6 @@ describe("CREATE", () => {
 
     it("addEntity()", () => {
 
-        const s = new lssv();
-        s.addEntity("persons", propsType);
         // After adding an entity we should have 1
         expect(localStorage.getItem('numberOfEntities'), "numberOfEntities() should increment by 1").to.be.equal("1")
 
@@ -62,7 +59,6 @@ describe("CREATE", () => {
         if (entitiesEnum) {
             let parsedEnum;
             parsedEnum = JSON.parse(entitiesEnum);
-
             expect(parsedEnum.persons.name, "addEntity() should have added the properties of the entity in 'entitiesEnum'").to.be.equal("string");
 
         }

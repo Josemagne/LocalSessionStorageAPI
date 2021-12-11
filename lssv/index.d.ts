@@ -16,15 +16,17 @@ declare class lssv {
      */
     constructor(storage?: Storage);
     /**
-     *
+     * Creates an entity
+     * @param entityName Name of the entity
      * @param entityProps The properties of the entity
      * @param storage Which storage to interact with
      */
-    addEntity: (entityName: string, entityProps: Props, storage?: Storage) => void;
+    addEntity: (entityName: string, entityProps: Props, storage?: Storage) => Promise<boolean>;
     /**
      * Inserts an instance into the web storage.
      * @param entityName Name of entity
      * @param props Obj with the properties of the instance
+     * @param autoIncrement A property that is auto incrementing
      * @param storage Type of web storage
      * @returns Promise Returns a promise based true for success and false for failure.
      */
@@ -108,9 +110,9 @@ declare class lssv {
      */
     private getNumberOfEntities;
     /**
-* Gets the properties of an entity
-* @param entityName Name of entity
-* @param storage Type of web storage
+  * Gets the properties of an entity
+  * @param entityName Name of entity
+  * @param storage Type of web storage
 */
     private getProperties;
     /**
@@ -125,6 +127,7 @@ declare class lssv {
      * Is only invoked by createInstance() and getObject(). The function gets the keys from 'propsArray' and the values from the specific instance and returns an object
      */
     private composeInstance;
+    private checkEntity;
     /**
      * Is only invoked by createInstance(). Tests if the instance values respect the specification at propertiesType.
      * @param entityName Name of entity
@@ -132,6 +135,24 @@ declare class lssv {
      * @returns Promise Returns either true or an error message
      */
     private checkInstance;
+    /**
+     * Gets either the necessary or optional props of an entity. If 'necessaryProps' is true then it returns the properties of the given entity that must be specified. If 'necessaryProps' is false then we return the optional properties
+     * @param entityName Name of entity
+     * @param optionalProps Decides if we want the necessaryProps
+     * @param storage
+     */
+    private getCertainProps;
+    /**
+     *
+     * @param props The properties of an entity
+     * @param necessary Decides if we return the necessary properties if true and the optional if false
+     */
+    private ascertainKindOfProps;
+    /**
+     * Helper method that gets the kind of the properties for an object
+     * @param prop The object whose properties is going to be extracted
+     * @param necessary Decides if we return only the necessary or optional props
+     */
+    private getPropsOfObject;
 }
 export default lssv;
-//# sourceMappingURL=index.d.ts.map

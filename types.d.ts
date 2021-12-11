@@ -1,17 +1,19 @@
 
+
 /**
  * Represents propertiesType and the instance of an entity
  */
 export declare interface Props {
-    [key: string]: string;
+    [key: string]: string | Object | string[] | number[];
 }
+
+
+
 
 
 export declare interface Entity {
     id: number;
-    name: string;
     props: Props;
-
 }
 
 
