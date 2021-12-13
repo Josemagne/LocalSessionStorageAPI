@@ -85,14 +85,14 @@ After we added the entity the storage type will look like this:
 
 Here are the explanation for terms that are used in the code. From here on the api is abbreviated as '**llsv**' which stands for vanilla LocalSessionStorageAPI.
 
-| Term     | Explanation                                      |
-| -------- | :----------------------------------------------- |
-| Entity   | An entity is an object that contains properties. |
-| Instance | An instance is                                   |
-| Property | A property defines a part of an entity.          |
-| Object   | An object is a simple JavaScript object.         |
+| Term          | Explanation                                      |
+| ------------- | :----------------------------------------------- |
+| Entity        | An entity is an object that contains properties. |
+| Instance      | An instance is                                   |
+| Property      | A property defines a part of an entity.          |
+| storageObject | An object is a simple JavaScript object.         |
 
-### Examples
+### Details
 
 <details>
 <summary>Entity</summary>
@@ -142,6 +142,23 @@ If we speak of 'kind' we mean if the property is necessary id est whether it mus
 
 </details>
 
+<details>
+<summary>storageObject</summary>
+<p>A storageObject is a simple JavaScript object that is transformed with JSON.stringify() and then stored in a web storage.</p>
+<p>E.g.</p>
+
+```Javascript
+{clickedDisplayBtn: false}
+```
+
+The web storage will then hold it:
+
+| Key               | Value |
+| ----------------- | :---- |
+| clickedDisplayBtn | false |
+
+</details>
+
 ## Functioning
 
 ---
@@ -161,6 +178,10 @@ To keep track of the entities we have 'entitiesEnum'. 'entitiesEnum' is an objec
 ## Best Practises
 
 ---
+
+### Naming Convention
+
+If you are using a framework (library) like React.js then you can store variables in a web storage. To access a storageObject
 
 ### sessionStorage
 

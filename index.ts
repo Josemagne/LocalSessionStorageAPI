@@ -222,8 +222,22 @@ class lssv {
     }
 
 
-    // TODO finish
-    public createObject = () => {
+
+    /**
+     * Creates an object
+     * @param objectName Name of storageObject
+     * @param data 
+     * @param storage 
+     */
+    public createStorageObject = async (objectName: string, data: Props, storage: Storage = this.storageChoice): Promise<boolean> => {
+
+        await storage.setItem(objectName, JSON.stringify(data));
+
+        if (storage.getItem(objectName)) {
+            return Promise.reject(false);
+        }
+
+        return Promise.resolve(true);
 
     }
 
@@ -275,13 +289,25 @@ class lssv {
     /**
      * Retrieves instances that fulfill certain conditions
      */
-    public getWithCondition = (condition: Condition) => {
+    public getEntityWithCondition = (condition: Condition) => {
+
 
     }
 
-    // TODO finish
-    public getObjects = () => {
+    public getInstanceWithCondition = (condition: Condition) => {
 
+    }
+
+
+    public getStorageObject = (objectName: string, storage: Storage = this.storageChoice): Promise<Props> => {
+
+        const result = storage.getItem(objectName);
+
+        if (result) {
+            return Promise.resolve(JSON.parse(result));
+        }
+
+        return Promise.reject("The object does not exist");
     }
 
 
