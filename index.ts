@@ -78,15 +78,6 @@ class lssv {
                     await storage.setItem(`${entityID}.propertiesType`, JSON.stringify(entityProps));
                 }
 
-                // Necessary props
-                const necessaryProps = this.ascertainKindOfProps(entityProps, true)
-                storage.setItem(`${entityID}.necessaryProps`, JSON.stringify(necessaryProps));
-
-                // Optional props
-                const optionalProps = this.ascertainKindOfProps(entityProps, false);
-                storage.setItem(`${entityID}.optionalProps`, JSON.stringify(optionalProps));
-
-
                 // numberOfInstances
                 await storage.setItem(`${entityID}.numberOfInstances`, "0")
 
@@ -114,12 +105,8 @@ class lssv {
                     // Convert string to object
                     let parsedEnum: EntitiesEnum = JSON.parse(entitiesEnum);
 
-                    console.log("parsedEnum", parsedEnum);
-
                     // Add the properties
                     parsedEnum[entityName] = { id: entityID, props: entityProps }
-
-                    console.log("parsedEnum nachher: ", parsedEnum);
 
 
                     // Set the item in the web storage
@@ -181,7 +168,7 @@ class lssv {
 
             instance_id++;
 
-            storage.setItem(`${entityID}.${instanceID}`, JSON.stringify(props));
+            storage.setItem(`${entityID}.${instance_id}`, JSON.stringify(props));
 
             // Once we finished inserting the new entity we increment numberOfInstances by one
 
@@ -282,8 +269,6 @@ class lssv {
         return null;
 
     }
-
-
 
 
 
@@ -681,65 +666,6 @@ class lssv {
 
     }
 
-
-    /**
-     * 
-     * @param props The properties of an entity
-     * @param necessary Decides if we return the necessary properties if true and the optional if false
-     */
-    private ascertainKindOfProps = (props: Props, necessary: boolean): Props => {
-
-        /**
-         * The requested kind of properties
-         */
-        let result: Props = {};
-
-        // Keys of the properties
-        const keys = Object.keys(props);
-
-        if (necessary) {
-            for (let i = 0; i < Object.keys(props).length; i++) {
-
-                // If the property is an object
-                if (props[keys[i]] instanceof Object) {
-
-                    // If the object property is necessary
-                    if (!keys[i].endsWith("?")) {
-
-                        const subProps: Props = this.getPropsOfObject(props[keys[i]], necessary)
-
-                        // Append the property to the result
-                        result[keys[i]] = subProps;
-                    }
-                }
-
-                // The property is a string
-                else if (typeof props[keys[i]] === "string") {
-                    // The propertyName ends not with a question mark
-                    if (!keys[i].endsWith("?")) {
-                        // append the property to the end result
-                        result[keys[i]] = props[keys[i]];
-                    }
-                }
-
-                // The property is a string
-                else {
-                    if (!keys[i].endsWith("?")) {
-                        result[keys[i]] = props[keys[i]];
-                    }
-
-                }
-            }
-        }
-
-        // TODO finish optional
-        else {
-            result = {};
-        }
-
-        return result;
-
-    }
 
     /**
      * Helper method that gets the kind of the properties for an object

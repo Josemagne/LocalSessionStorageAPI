@@ -119,10 +119,8 @@ var lssv = /** @class */ (function () {
                                     console.log("entitiesEnum: ", entitiesEnum);
                                     if (entitiesEnum) {
                                         parsedEnum = JSON.parse(entitiesEnum);
-                                        console.log("parsedEnum", parsedEnum);
                                         // Add the properties
                                         parsedEnum[entityName] = { id: entityID, props: entityProps };
-                                        console.log("parsedEnum nachher: ", parsedEnum);
                                         // Set the item in the web storage
                                         storage.setItem('entitiesEnum', JSON.stringify(parsedEnum));
                                     }
@@ -165,20 +163,14 @@ var lssv = /** @class */ (function () {
         this.createInstance = function (entityName, props, storage) {
             if (storage === void 0) { storage = _this.storageChoice; }
             return __awaiter(_this, void 0, void 0, function () {
-                var entityID, instanceID, instanceValues;
-                var _this = this;
+                var entityID, instanceID;
                 return __generator(this, function (_a) {
                     entityID = this.getEntityID(entityName, storage);
                     instanceID = this.getNumberOfInstances(entityName, storage);
-                    instanceValues = Object.values(props);
                     /* Insert the data into web storage */
                     instanceID.then(function (instance_id) {
                         instance_id++;
-                        // Check if the data for the entity is legitimate
-                        _this.checkInstance(entityName, props).then(function () {
-                            // Insert values of instance 
-                            storage.setItem("".concat(entityID, ".").concat(instanceID), instanceValues.join(','));
-                        });
+                        storage.setItem("".concat(entityID, ".").concat(instance_id), JSON.stringify(props));
                         // Once we finished inserting the new entity we increment numberOfInstances by one
                         storage.setItem("".concat(entityID, ".numberOfInstances"), (instance_id).toString());
                         return true;
@@ -548,56 +540,6 @@ var lssv = /** @class */ (function () {
                             _a.label = 2;
                         case 2: return [2 /*return*/, false];
                     }
-                });
-            });
-        };
-        /**
-         * Is only invoked by createInstance(). Tests if the instance values respect the specification at propertiesType.
-         * @param entityName Name of entity
-         * @param instanceValues Array with the values of the instance
-         * @returns Promise Returns either true or an error message
-         */
-        this.checkInstance = function (entityName, instanceProps, storage) {
-            if (storage === void 0) { storage = _this.storageChoice; }
-            return __awaiter(_this, void 0, void 0, function () {
-                var entityID, propertiesTypes, necessaryProps, parsedNecessaryProps, keys_instanceProps, keys_necessaryProps, k, j;
-                return __generator(this, function (_a) {
-                    entityID = this.getEntityID(entityName, storage);
-                    propertiesTypes = this.getProperties(entityName, storage);
-                    // If the entity does not exist
-                    if (!propertiesTypes) {
-                        // The entity does not exist
-                        Promise.reject(new Error("The entity does not exist"));
-                    }
-                    necessaryProps = storage.getItem("".concat(entityID, ".necessaryProps"));
-                    if (necessaryProps) {
-                        parsedNecessaryProps = JSON.parse(necessaryProps);
-                        keys_instanceProps = Object.keys(instanceProps);
-                        keys_necessaryProps = Object.keys(parsedNecessaryProps);
-                        // Check if the length is the same
-                        if (keys_instanceProps.length < keys_necessaryProps.length) {
-                            return [2 /*return*/, Promise.reject(new Error("Not all necessary properties are given"))];
-                        }
-                        // The number of properties is the same
-                        else {
-                            // Check if the name of the props are the same
-                            for (k = 0; k < keys_necessaryProps.length; k++) {
-                                // If the property does not exist
-                                if (!parsedNecessaryProps[keys_instanceProps[k]]) {
-                                    return [2 /*return*/, Promise.reject(new Error("".concat(parsedNecessaryProps[keys_necessaryProps[k]], " is n")))];
-                                }
-                            }
-                            // Check if the type of the values are the same
-                            for (j = 0; j < keys_instanceProps.length; j++) {
-                                if (parsedNecessaryProps[keys_necessaryProps[j]] !== typeof instanceProps[keys_necessaryProps[j]]) {
-                                    return [2 /*return*/, Promise.reject(new Error("".concat(instanceProps[keys_necessaryProps[j]], " is not of the required type")))];
-                                }
-                            }
-                        }
-                        return [2 /*return*/, Promise.resolve(true)];
-                    }
-                    // If not everything went fine
-                    return [2 /*return*/, Promise.reject(false)];
                 });
             });
         };

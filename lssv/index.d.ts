@@ -140,13 +140,6 @@ declare class lssv {
     private composeInstance;
     private checkEntity;
     /**
-     * Is only invoked by createInstance(). Tests if the instance values respect the specification at propertiesType.
-     * @param entityName Name of entity
-     * @param instanceValues Array with the values of the instance
-     * @returns Promise Returns either true or an error message
-     */
-    private checkInstance;
-    /**
      * Gets either the necessary or optional props of an entity. If 'necessaryProps' is true then it returns the properties of the given entity that must be specified. If 'necessaryProps' is false then we return the optional properties
      * @param entityName Name of entity
      * @param optionalProps Decides if we want the necessaryProps

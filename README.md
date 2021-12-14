@@ -176,6 +176,10 @@ If using lssv with events in a framework it is advised to pass only data that do
 
 For example you shouldn't use lssv for events such as mousemouve but instead for mousedown with mouseup.
 
+### No permenant storage
+
+Web storage is not a permenant solution for your data. For this we have databases or the file system. The web storage is intended for small amounts of data.
+
 ### Naming Convention
 
 If you are using a framework (library) like React.js then you can store variables in a web storage. To access a storageObject
