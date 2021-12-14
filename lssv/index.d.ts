@@ -38,7 +38,13 @@ declare class lssv {
      * @param storage Type of web storage
      */
     createInstances: (entityName: string, props: Props[], storage?: Storage) => Promise<boolean>;
-    createObject: () => void;
+    /**
+     * Creates an object
+     * @param objectName Name of storageObject
+     * @param data
+     * @param storage
+     */
+    createStorageObject: (objectName: string, data: Props, storage?: Storage) => Promise<boolean>;
     /**
      * Get all the instances of an entity
      * @param entity Entity whose instances we want to retrieve
@@ -48,8 +54,13 @@ declare class lssv {
     /**
      * Retrieves instances that fulfill certain conditions
      */
-    getWithCondition: (condition: Condition) => void;
-    getObjects: () => void;
+    getEntityWithCondition: (condition: Condition) => void;
+    /**
+* Retrieves first instance that fulfills a given condition
+     * @param condition Condition
+     */
+    getInstanceWithCondition: (condition: Condition) => void;
+    getStorageObject: (objectName: string, storage?: Storage) => any;
     /**
      * Changes the properties type of an entity.
      * @param entityName Name of entity
@@ -154,5 +165,7 @@ declare class lssv {
      * @param necessary Decides if we return only the necessary or optional props
      */
     private getPropsOfObject;
+    createEvent: (eventName: string, description: string, callBackFn: EventListenerObject) => void;
+    removeEvent: (eventName: string, callBackFn: EventListenerObject) => void;
 }
 export default lssv;

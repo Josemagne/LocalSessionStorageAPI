@@ -72,10 +72,13 @@ var lssv = /** @class */ (function () {
                             switch (_a.label) {
                                 case 0:
                                     if (entityExists)
-                                        Promise.reject(new Error("The entity already exists!"));
+                                        return [2 /*return*/, Promise.reject(new Error("The entity already exists!"))
+                                            /* Collect and process the data */
+                                            // id
+                                        ];
                                     entityID = this.getNumberOfEntities(storage);
-                                    if (!entityID) return [3 /*break*/, 10];
-                                    // increment id
+                                    if (!(entityID + 1)) return [3 /*break*/, 10];
+                                    // Increment entityID
                                     entityID++;
                                     if (!!storage.getItem("".concat(entityID, ".propertiesType"))) return [3 /*break*/, 2];
                                     return [4 /*yield*/, storage.setItem("".concat(entityID, ".propertiesType"), JSON.stringify(entityProps))];
@@ -113,10 +116,13 @@ var lssv = /** @class */ (function () {
                                     // propertiesType
                                     _a.sent();
                                     entitiesEnum = storage.getItem("entitiesEnum");
+                                    console.log("entitiesEnum: ", entitiesEnum);
                                     if (entitiesEnum) {
                                         parsedEnum = JSON.parse(entitiesEnum);
+                                        console.log("parsedEnum", parsedEnum);
                                         // Add the properties
                                         parsedEnum[entityName] = { id: entityID, props: entityProps };
+                                        console.log("parsedEnum nachher: ", parsedEnum);
                                         // Set the item in the web storage
                                         storage.setItem('entitiesEnum', JSON.stringify(parsedEnum));
                                     }
@@ -139,7 +145,9 @@ var lssv = /** @class */ (function () {
                                 case 10: return [2 /*return*/];
                             }
                         });
-                    }); });
+                    }); }).catch(function (err) {
+                        return Promise.reject(new Error("An err in addEntity() occured: " + err));
+                    });
                     return [2 /*return*/, Promise.reject(false)];
                 });
             });
@@ -172,7 +180,7 @@ var lssv = /** @class */ (function () {
                             storage.setItem("".concat(entityID, ".").concat(instanceID), instanceValues.join(','));
                         });
                         // Once we finished inserting the new entity we increment numberOfInstances by one
-                        storage.setItem("".concat(entityID, ".numberOfInstances"), (instanceID).toString());
+                        storage.setItem("".concat(entityID, ".numberOfInstances"), (instance_id).toString());
                         return true;
                     });
                     // If the entity does not exist
@@ -210,8 +218,27 @@ var lssv = /** @class */ (function () {
                 });
             });
         };
-        // TODO finish
-        this.createObject = function () {
+        /**
+         * Creates an object
+         * @param objectName Name of storageObject
+         * @param data
+         * @param storage
+         */
+        this.createStorageObject = function (objectName, data, storage) {
+            if (storage === void 0) { storage = _this.storageChoice; }
+            return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, storage.setItem(objectName, JSON.stringify(data))];
+                        case 1:
+                            _a.sent();
+                            if (storage.getItem(objectName)) {
+                                return [2 /*return*/, Promise.resolve(true)];
+                            }
+                            return [2 /*return*/, Promise.reject(false)];
+                    }
+                });
+            });
         };
         /* READ */
         /* Here are all the methods that are about reading data */
@@ -256,10 +283,20 @@ var lssv = /** @class */ (function () {
         /**
          * Retrieves instances that fulfill certain conditions
          */
-        this.getWithCondition = function (condition) {
+        this.getEntityWithCondition = function (condition) {
         };
-        // TODO finish
-        this.getObjects = function () {
+        /**
+    * Retrieves first instance that fulfills a given condition
+         * @param condition Condition
+         */
+        this.getInstanceWithCondition = function (condition) {
+        };
+        this.getStorageObject = function (objectName, storage) {
+            if (storage === void 0) { storage = _this.storageChoice; }
+            var result = storage.getItem(objectName);
+            if (result) {
+                return JSON.parse(result);
+            }
         };
         /* UPDATE */
         /* Here are all the methods that are related to editing data */
@@ -432,7 +469,7 @@ var lssv = /** @class */ (function () {
             if (number) {
                 return parseInt(number);
             }
-            return null;
+            return 0;
         };
         /**
       * Gets the properties of an entity
@@ -465,8 +502,10 @@ var lssv = /** @class */ (function () {
             if (storage === void 0) { storage = _this.storageChoice; }
             var entitiesEnum = storage.getItem("entitiesEnum");
             var entityObj = {};
+            console.log("entitiesEnum: ", entitiesEnum);
             if (entitiesEnum) {
                 entityObj = JSON.parse(entitiesEnum);
+                console.log("The id is. ", entityObj[entityName].id.toString());
                 return entityObj[entityName].id.toString();
             }
             // The entity does not exist i.e. it was not added
@@ -544,21 +583,21 @@ var lssv = /** @class */ (function () {
                             // Check if the name of the props are the same
                             for (k = 0; k < keys_necessaryProps.length; k++) {
                                 // If the property does not exist
-                                if (parsedNecessaryProps[keys_instanceProps[k]]) {
+                                if (!parsedNecessaryProps[keys_instanceProps[k]]) {
                                     return [2 /*return*/, Promise.reject(new Error("".concat(parsedNecessaryProps[keys_necessaryProps[k]], " is n")))];
                                 }
                             }
                             // Check if the type of the values are the same
                             for (j = 0; j < keys_instanceProps.length; j++) {
-                                if (parsedNecessaryProps[keys_necessaryProps[j]] === typeof instanceProps[keys_necessaryProps[j]]) {
+                                if (parsedNecessaryProps[keys_necessaryProps[j]] !== typeof instanceProps[keys_necessaryProps[j]]) {
                                     return [2 /*return*/, Promise.reject(new Error("".concat(instanceProps[keys_necessaryProps[j]], " is not of the required type")))];
                                 }
                             }
                         }
                         return [2 /*return*/, Promise.resolve(true)];
                     }
-                    // If everything went fine
-                    return [2 /*return*/, Promise.resolve(false)];
+                    // If not everything went fine
+                    return [2 /*return*/, Promise.reject(false)];
                 });
             });
         };
@@ -567,6 +606,7 @@ var lssv = /** @class */ (function () {
         // }
         // TODO finish
         // private encryptStorage = async (): Promise<boolean> => {
+        // TODO require password
         // }
         /**
          * Gets either the necessary or optional props of an entity. If 'necessaryProps' is true then it returns the properties of the given entity that must be specified. If 'necessaryProps' is false then we return the optional properties
@@ -664,6 +704,19 @@ var lssv = /** @class */ (function () {
             else {
             }
             return result;
+        };
+        /* EVENTS */
+        /* Here we add custom events to document to inform other components that a particular change happened */
+        this.createEvent = function (eventName, description, callBackFn) {
+            var newEvent = new CustomEvent(eventName, {
+                detail: {
+                    description: description
+                }
+            });
+            document.addEventListener(eventName, callBackFn);
+        };
+        this.removeEvent = function (eventName, callBackFn) {
+            document.removeEventListener(eventName, callBackFn);
         };
         // set the choice for the default storage
         this.storageChoice = storage;

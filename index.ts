@@ -60,17 +60,18 @@ class lssv {
 
         // Check that the entity does not already exist
         this.checkEntity(entityName, storage).then(async (entityExists) => {
-            if (entityExists) Promise.reject(new Error("The entity already exists!"))
+            if (entityExists) return Promise.reject(new Error("The entity already exists!"))
 
             /* Collect and process the data */
 
             // id
             let entityID = this.getNumberOfEntities(storage);
 
-            if (entityID) {
 
-                // increment id
-                entityID += 1;
+            if (entityID + 1) {
+
+                // Increment entityID
+                entityID++;
 
                 // Props of entity
                 if (!storage.getItem(`${entityID}.propertiesType`)) {
@@ -107,12 +108,19 @@ class lssv {
 
                 /* entitiesEnum */
                 let entitiesEnum = storage.getItem("entitiesEnum");
+                console.log("entitiesEnum: ", entitiesEnum);
+
                 if (entitiesEnum) {
                     // Convert string to object
                     let parsedEnum: EntitiesEnum = JSON.parse(entitiesEnum);
 
+                    console.log("parsedEnum", parsedEnum);
+
                     // Add the properties
                     parsedEnum[entityName] = { id: entityID, props: entityProps }
+
+                    console.log("parsedEnum nachher: ", parsedEnum);
+
 
                     // Set the item in the web storage
                     storage.setItem('entitiesEnum', JSON.stringify(parsedEnum))
@@ -143,8 +151,7 @@ class lssv {
 
 
         }).catch(err => {
-            console.log("An err in addEntity() occured: ", err);
-
+            return Promise.reject(new Error("An err in addEntity() occured: " + err));
         })
         return Promise.reject(false);
     }
@@ -168,24 +175,17 @@ class lssv {
 
         let instanceID = this.getNumberOfInstances(entityName, storage);
 
-        const instanceValues = Object.values(props);
-
 
         /* Insert the data into web storage */
         instanceID.then((instance_id) => {
 
             instance_id++;
 
-            // Check if the data for the entity is legitimate
-            this.checkInstance(entityName, props).then(() => {
-                // Insert values of instance 
-                storage.setItem(`${entityID}.${instanceID}`, instanceValues.join(','));
-            })
-
+            storage.setItem(`${entityID}.${instanceID}`, JSON.stringify(props));
 
             // Once we finished inserting the new entity we increment numberOfInstances by one
 
-            storage.setItem(`${entityID}.numberOfInstances`, (instanceID).toString())
+            storage.setItem(`${entityID}.numberOfInstances`, (instance_id).toString())
 
             return true;
         });
@@ -234,10 +234,11 @@ class lssv {
         await storage.setItem(objectName, JSON.stringify(data));
 
         if (storage.getItem(objectName)) {
-            return Promise.reject(false);
+
+            return Promise.resolve(true);
         }
 
-        return Promise.resolve(true);
+        return Promise.reject(false);
 
     }
 
@@ -294,20 +295,23 @@ class lssv {
 
     }
 
+    /**
+* Retrieves first instance that fulfills a given condition
+     * @param condition Condition
+     */
     public getInstanceWithCondition = (condition: Condition) => {
 
     }
 
 
-    public getStorageObject = (objectName: string, storage: Storage = this.storageChoice): Promise<Props> => {
+    public getStorageObject = (objectName: string, storage: Storage = this.storageChoice): any => {
 
         const result = storage.getItem(objectName);
 
         if (result) {
-            return Promise.resolve(JSON.parse(result));
+            return JSON.parse(result);
         }
 
-        return Promise.reject("The object does not exist");
     }
 
 
@@ -518,15 +522,16 @@ class lssv {
      * Returns the number of entities that is stored in 'numberOfEntities'.
      * @param storage Type of web storage
      */
-    private getNumberOfEntities = (storage: Storage = this.storageChoice): number | null => {
+    private getNumberOfEntities = (storage: Storage = this.storageChoice): number => {
 
         const number = storage.getItem('numberOfEntities');
 
         if (number) {
+
             return parseInt(number);
         }
 
-        return null;
+        return 0;
 
     }
 
@@ -569,8 +574,12 @@ class lssv {
         let entitiesEnum = storage.getItem("entitiesEnum");
         let entityObj: EntitiesEnum = {};
 
+        console.log("entitiesEnum: ", entitiesEnum);
+
         if (entitiesEnum) {
             entityObj = JSON.parse(entitiesEnum);
+            console.log("The id is. ", entityObj[entityName].id.toString());
+
             return entityObj[entityName].id.toString();
         }
 
@@ -620,75 +629,7 @@ class lssv {
         return false;
     }
 
-    /**
-     * Is only invoked by createInstance(). Tests if the instance values respect the specification at propertiesType.
-     * @param entityName Name of entity
-     * @param instanceValues Array with the values of the instance
-     * @returns Promise Returns either true or an error message
-     */
-    private checkInstance = async (entityName: string, instanceProps: Props, storage: Storage = this.storageChoice): Promise<boolean> => {
 
-        const entityID = this.getEntityID(entityName, storage);
-
-        const propertiesTypes = this.getProperties(entityName, storage);
-
-        // If the entity does not exist
-        if (!propertiesTypes) {
-
-            // The entity does not exist
-            Promise.reject(new Error("The entity does not exist"));
-
-        }
-
-        /* Check if the necessary props are given */
-
-        // Get the necessary props
-        const necessaryProps = storage.getItem(`${entityID}.necessaryProps`);
-
-        if (necessaryProps) {
-            const parsedNecessaryProps = JSON.parse(necessaryProps);
-
-            const keys_instanceProps = Object.keys(instanceProps);
-
-            const keys_necessaryProps = Object.keys(parsedNecessaryProps);
-
-            // Check if the length is the same
-            if (keys_instanceProps.length < keys_necessaryProps.length) {
-                return Promise.reject(new Error("Not all necessary properties are given"));
-            }
-            // The number of properties is the same
-            else {
-
-                // Check if the name of the props are the same
-                for (let k = 0; k < keys_necessaryProps.length; k++) {
-
-                    // If the property does not exist
-                    if (parsedNecessaryProps[keys_instanceProps[k]]) {
-                        return Promise.reject(new Error(`${parsedNecessaryProps[keys_necessaryProps[k]]} is n`))
-                    }
-
-                }
-
-                // Check if the type of the values are the same
-
-                for (let j = 0; j < keys_instanceProps.length; j++) {
-                    if (parsedNecessaryProps[keys_necessaryProps[j]] === typeof instanceProps[keys_necessaryProps[j]]) {
-                        return Promise.reject(new Error(`${instanceProps[keys_necessaryProps[j]]} is not of the required type`));
-                    }
-
-                }
-            }
-
-
-            return Promise.resolve(true);
-
-        }
-
-        // If everything went fine
-        return Promise.resolve(false);
-
-
-    }
 
     // TODO finish
     // private encryptInstance = async (): Promise<boolean> => {
@@ -834,6 +775,26 @@ class lssv {
 
 
     }
+
+    /* EVENTS */
+    /* Here we add custom events to document to inform other components that a particular change happened */
+
+    createEvent = (eventName: string, description: string, callBackFn: EventListenerObject): void => {
+
+        const newEvent = new CustomEvent(eventName, {
+            detail: {
+                description: description
+            }
+        });
+
+        document.addEventListener(eventName, callBackFn);
+
+    }
+
+    removeEvent = (eventName: string, callBackFn: EventListenerObject): void => {
+        document.removeEventListener(eventName, callBackFn);
+    }
+    // remove
 
 
 

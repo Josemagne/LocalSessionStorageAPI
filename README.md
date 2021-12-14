@@ -145,17 +145,18 @@ If we speak of 'kind' we mean if the property is necessary id est whether it mus
 <details>
 <summary>storageObject</summary>
 <p>A storageObject is a simple JavaScript object that is transformed with JSON.stringify() and then stored in a web storage.</p>
+<p>If you want to keep track of the storageObjects simply name your variables the same as your keys</p>
 <p>E.g.</p>
 
 ```Javascript
-{clickedDisplayBtn: false}
+let clickedDisplayBtn = {clickedDisplayBtn: false}
 ```
 
 The web storage will then hold it:
 
-| Key               | Value |
-| ----------------- | :---- |
-| clickedDisplayBtn | false |
+| Key               | Value                      |
+| ----------------- | :------------------------- |
+| clickedDisplayBtn | {clickedDisplayBtn: false} |
 
 </details>
 
@@ -165,19 +166,15 @@ The web storage will then hold it:
 
 How does the API work?
 
-properties is a listing of all the properties that the entity has.
-The first items are prefixed with a zero. They contain the settings for the api.
-
-### Entities
-
-Entities such as persons, employees, products, books and so on begin with {1-9}.{nameOfEntity}. </br>
-All the instances of the entities are then further prefixed with a point and a number starting with 1
-
-To keep track of the entities we have 'entitiesEnum'. 'entitiesEnum' is an object where the key is the name of the entity and the value is another object with its properties ("props") and id ("id").
-
 ## Best Practises
 
 ---
+
+### Event drive lssv
+
+If using lssv with events in a framework it is advised to pass only data that does not change often. The web storage is not RAM but its performance is acceptable if the timespan between write (setItem()) and read (getItem()) is reasonable.
+
+For example you shouldn't use lssv for events such as mousemouve but instead for mousedown with mouseup.
 
 ### Naming Convention
 
