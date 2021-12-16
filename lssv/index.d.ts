@@ -5,12 +5,17 @@ declare class lssv {
      * The object's lifetime is during the runtime of the program.
      */
     entities: Entity[];
+    events: string[];
     /**
      * Defines the default web storage choice that we are handling. If no storage is specified in the methods then we use the value of storageChoice
      * The options are either localStorage or sessionStorage.
      * The predefined storage type is localStorage.
      */
     private storageChoice;
+    /**
+     * lssv accepts a limit of 5mb per web storage. Since the web storage saves the characters in unicode (16 bits per character) we stop if 'limit' reached 300'000.
+     */
+    private limit;
     /**
      * @param storage Type of web storage the object will use by default.
      */
@@ -103,13 +108,16 @@ declare class lssv {
      */
     deleteWithCondition: () => void;
     deleteObject: () => void;
-    migrateEntities: () => void;
     migrateInstances: () => void;
     convertJSON: () => void;
     /**
      * Populates 'entities' with data
      */
-    private loadData;
+    private loadToEntities;
+    /**
+     * Populates redux with the web storage content
+     */
+    private loadToRedux;
     /**
      * Returns the total number of instances for an entity
      * We have an item with the key 'numberOfInstances' on each entity that stores how much instances an entity has
@@ -147,18 +155,21 @@ declare class lssv {
      */
     private getCertainProps;
     /**
-     *
-     * @param props The properties of an entity
-     * @param necessary Decides if we return the necessary properties if true and the optional if false
-     */
-    private ascertainKindOfProps;
-    /**
      * Helper method that gets the kind of the properties for an object
      * @param prop The object whose properties is going to be extracted
      * @param necessary Decides if we return only the necessary or optional props
      */
     private getPropsOfObject;
-    createEvent: (eventName: string, description: string, callBackFn: EventListenerObject) => void;
+    /**
+     *
+     * @param eventName Name of event
+     * @param description The description for later lookup
+     * @param thing Options: entity, object
+     * @param callBackFn Function that gets executed if a an event g
+     * @version 1.1.7
+     */
+    createEvent: (eventName: string, description: string, callBackFn: () => void) => void;
+    private listenToEvent;
     removeEvent: (eventName: string, callBackFn: EventListenerObject) => void;
 }
 export default lssv;

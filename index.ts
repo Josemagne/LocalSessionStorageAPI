@@ -1,5 +1,7 @@
-import { EntitiesEnum, Entity, Props, ILocalSessionStorageAPI, Condition } from './types';
 
+import { EntitiesEnum, Entity, Props, ILocalSessionStorageAPI, Condition, LSSVEvent } from './types';
+
+import lssi from "./lssi";
 class lssv {
 
     /**
@@ -12,6 +14,8 @@ class lssv {
 
 
 
+    public events: LSSVEvent[] = [];
+
 
 
     /**
@@ -20,6 +24,12 @@ class lssv {
      * The predefined storage type is localStorage.
      */
     private storageChoice: Storage = localStorage;
+
+
+    /**
+     * lssv accepts a limit of 5mb per web storage. Since the web storage saves the characters in unicode (16 bits per character) we stop if 'limit' reached 300'000.
+     */
+    private limit: number = 0;
 
 
 
@@ -42,6 +52,11 @@ class lssv {
 
             if (!storage.getItem('entitiesEnum')) {
                 storage.setItem('entitiesEnum', JSON.stringify({}));
+            }
+
+            // Keep track of events
+            if (!storage.getItem('events')) {
+                storage.setItem('events', "[]");
             }
 
         }
@@ -156,6 +171,11 @@ class lssv {
      */
     public createInstance = async (entityName: string, props: Props, storage = this.storageChoice): Promise<boolean> => {
 
+        // Check if there is still place
+        if (this.limit > 300000) {
+            return Promise.reject(new Error("The limit is exceeded"))
+        }
+
         /* Collect the data */
 
         let entityID = this.getEntityID(entityName, storage);
@@ -169,6 +189,10 @@ class lssv {
             instance_id++;
 
             storage.setItem(`${entityID}.${instance_id}`, JSON.stringify(props));
+
+            // Add to limit
+            let length = JSON.stringify(props).length;
+            this.limit += length;
 
             // Once we finished inserting the new entity we increment numberOfInstances by one
 
@@ -447,14 +471,17 @@ class lssv {
 
     }
 
+    /**************************************************** */
     /* MIGRATION */
-    // This are the methods that migrate data to the other web storage
-    public migrateEntities = () => {
+    /**************************************************** */
+    // Here are methods that migrate data. It moves it to the other web storage.
 
-    }
+    // public migrateEntities = (storageType) => {
+
+    // }
 
 
-    public migrateInstances = () => {
+    public migrateInstances = (entityName: string) => {
 
     }
 
@@ -470,7 +497,14 @@ class lssv {
     /**
      * Populates 'entities' with data
      */
-    private loadData = () => {
+    private loadToEntities = () => {
+
+    }
+
+    /**
+     * Populates redux with the web storage content
+     */
+    private loadToRedux = () => {
 
     }
 
@@ -625,46 +659,7 @@ class lssv {
     // private encryptStorage = async (): Promise<boolean> => {
 
     // TODO require password
-    // }
-
-    /**
-     * Gets either the necessary or optional props of an entity. If 'necessaryProps' is true then it returns the properties of the given entity that must be specified. If 'necessaryProps' is false then we return the optional properties
-     * @param entityName Name of entity
-     * @param optionalProps Decides if we want the necessaryProps
-     * @param storage 
-     */
-    private getCertainProps = (entityName: string, necessaryProps: boolean, storage: Storage = this.storageChoice): Props => {
-
-        let result: Props = {};
-
-        const entityID = this.getEntityID(entityName);
-
-        if (entityID) {
-
-            // If neccesary props is true
-            if (necessaryProps) {
-
-                const necessaryProps = storage.getItem(`${entityID}.necessaryProps`)
-
-                if (necessaryProps) {
-                    result = JSON.parse(necessaryProps);
-                }
-
-
-            }
-            // If optional props are requested
-            else {
-                const optionalProps = storage.getItem(`${entityID}.optionalProps`);
-                if (optionalProps) {
-                    result = JSON.parse(optionalProps);
-                }
-
-            }
-        }
-
-        return result;
-
-    }
+    // 
 
 
     /**
@@ -705,25 +700,44 @@ class lssv {
     /* EVENTS */
     /* Here we add custom events to document to inform other components that a particular change happened */
 
-    createEvent = (eventName: string, description: string, callBackFn: EventListenerObject): void => {
+    /**
+     * 
+     * @param eventName Name of event
+     * @param description The description for later lookup
+     * @param thing Options: entity, object
+     * @param callBackFn Function that gets executed if a an event g
+     * @version 1.1.7
+     */
+    public createLssvEvent = (entityName: string, description: string, storage: Storage = this.storageChoice): LSSVEvent => {
 
-        const newEvent = new CustomEvent(eventName, {
+        const newEvent = new CustomEvent(entityName, {
             detail: {
                 description: description
             }
         });
 
-        document.addEventListener(eventName, callBackFn);
+        window.dispatchEvent(newEvent);
 
     }
 
-    removeEvent = (eventName: string, callBackFn: EventListenerObject): void => {
-        document.removeEventListener(eventName, callBackFn);
+
+
+    private addListener = (entityName: string, storage: Storage = this.storageChoice) => {
+
+    }
+
+    public removeEvent = (eventName: string, callBackFn: EventListenerObject): void => {
+        window.removeEventListener(eventName, callBackFn);
     }
     // remove
 
+    /**************************************************** */
+    /* indexedDB */
+    /**************************************************** */
+    /* Here are methods that are related with indexedDB */
 
 
 }
 
 export default lssv;
+

@@ -156,7 +156,7 @@ let clickedDisplayBtn = {clickedDisplayBtn: false}
 The web storage will then hold it:
 
 | Key               | Value                      |
-| ----------------- | :------------------------- |
+| :---------------- | :------------------------- |
 | clickedDisplayBtn | {clickedDisplayBtn: false} |
 
 </details>
@@ -174,6 +174,17 @@ createInstance("persons", { name: "Tailor" });
 ```
 
 </details>
+
+### lssv vs lssi
+
+#### Terminology
+
+Here a comparison of terms for web storage and indexedDB:
+
+| web storage | indexedDB    |
+| :---------- | :----------- |
+| Entity      | Object Store |
+| Instance    | Object       |
 
 ## Functioning
 

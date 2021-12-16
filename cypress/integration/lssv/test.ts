@@ -116,36 +116,4 @@ describe("HELPER FUNCTIONS", () => {
 
 })
 
-/* Stress Test */
 
-describe("should have 10'000 instances in localStorage", () => {
-
-
-    it("Should have 10'000 items", () => {
-
-
-        // Initialize
-        let propsType = {
-            name: "string",
-            prename: "string",
-            age: "number",
-            place: "string"
-
-        }
-
-        const s = new lssv(localStorage);
-
-        s.addEntity("persons", propsType);
-
-        let errors = 0;
-        for (let i = 0; i < 10000; i++) {
-            let result = s.createInstance("persons", propsType).then((res) => {
-                if (!res) errors++;
-            });
-
-        }
-
-        cy.log("the errors are: " + errors.toString())
-        expect(Object.keys(localStorage).length).to.be.greaterThan(10000)
-    })
-})

@@ -69,26 +69,3 @@ describe("HELPER FUNCTIONS", function () {
         expect(localStorage.getItem("numberOfEntities")).to.equal(1);
     });
 });
-/* Stress Test */
-describe("should have 10'000 instances in localStorage", function () {
-    it("Should have 10'000 items", function () {
-        // Initialize
-        var propsType = {
-            name: "string",
-            prename: "string",
-            age: "number",
-            place: "string"
-        };
-        var s = new lssv(localStorage);
-        s.addEntity("persons", propsType);
-        var errors = 0;
-        for (var i = 0; i < 10000; i++) {
-            var result = s.createInstance("persons", propsType).then(function (res) {
-                if (!res)
-                    errors++;
-            });
-        }
-        cy.log("the errors are: " + errors.toString());
-        expect(Object.keys(localStorage).length).to.be.greaterThan(10000);
-    });
-});
