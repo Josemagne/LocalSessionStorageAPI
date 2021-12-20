@@ -4,7 +4,9 @@
 
 - [Introduction](#introduction)
 
-localSessionStorageAPI is an API that simplifies the CRUD operations with the localStorage and sessionStorage
+localSessionStorageAPI is an API that simplifies the CRUD operations with the localStorage and sessionStorage.
+
+lssi is an api that facilitates the usage with indexedDB. lssv together with lssi handle the state management and data persistence on the web browser.
 
 The class can handle both sessionStorage and localStorage.
 
@@ -14,9 +16,11 @@ The class can handle both sessionStorage and localStorage.
 
 ### Purpose
 
-The primary purpose of lssv is to manage the state in complex web applications.
+The primary purpose of lssv is to manage the state in web applications.
 
 Its second functionality is to be a link between indexedDB and the web storage.
+
+The third advantage is that you can save data on the client side and need less data to be sent from the server.
 
 ### Get Started
 
@@ -207,14 +211,6 @@ If you are using a framework (library) like React.js then you can store variable
 
 lssv can be used to migrate data on the web storage to indexedDB.
 
-## References
-
----
-
-Here are resources to get sophisticated with web storage:
-
-- [Web Storage API by MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
-
 ## Q&A
 
 ---
@@ -229,8 +225,14 @@ RAM, web storage, (indexedDB || server database)
 
 E.g. You could use the web storage to load the data temporarily with input from the user and transfer it then for persistent availability in a server database or indexedDB.
 
-## Improvements
+## References
 
 ---
 
-Do you have improvements to the api? The project is still in development. If you have something that you
+Here are resources to get sophisticated with web storage:
+
+- [Web Storage API by MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
+- [w3 specification](https://html.spec.whatwg.org/multipage/webstorage.html#webstorage)
+- [Nolan Lawson](https://nolanlawson.com/2015/09/29/indexeddb-websql-localstorage-what-blocks-the-dom/)
+- [Alexander Zlatkov: storage engines](https://blog.sessionstack.com/how-javascript-works-storage-engines-how-to-choose-the-proper-storage-api-da50879ef576)
+- [Peter LePage in web.dev](https://web.dev/storage-for-the-web/)

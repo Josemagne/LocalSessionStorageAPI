@@ -1,4 +1,4 @@
-import lssv from "../../index";
+import lssv from "../../../index";
 /* The tests are ordered like in the source code inspired by the abbreviation CRUD. First come the operations that are about storing data (CREATE) and so on.  */
 
 let propsType = {

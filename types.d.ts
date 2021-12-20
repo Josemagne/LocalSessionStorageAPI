@@ -13,9 +13,8 @@ export declare interface LSSVEvent extends CustomEvent {
      * That what changed
      */
     detail: {
-
         /**
-         * The name of the entity where a change of state happened
+         * Name of entity
          */
         entityName: string;
         /**
@@ -33,9 +32,18 @@ export declare interface LSSVEvent extends CustomEvent {
 
 
 export declare interface Entity {
+    /**
+     * The unique identifier for the entity
+     */
     id: number;
+    /**
+     * The properties of the entity
+     */
     props: Props;
-    events: { [eventName: string]: LSSVEvent }
+    /**
+     * Decides if we listen to a change on that object
+     */
+    listenTo: boolean;
 }
 
 
@@ -61,4 +69,31 @@ export class ILocalSessionStorageAPI<entityName = string, propsType = propsType,
 export interface Condition {
     entity: string,
     [key: string]: string | number | Date;
+}
+
+/**************************************************** */
+/* INDEXEDDB TYPES */
+/**************************************************** */
+
+export interface DBRepresentationI {
+    numberOfDatabases: number;
+    detail: {
+        [databaseName: string]: {
+            version: number;
+            numberOfObjectStores: number;
+            id: string;
+            autoIncrement: boolean;
+            objectStores: {
+                [objectStoreName: string]: {
+                    schema: any;
+                    numberOfInstances: number;
+                }
+            }
+        }
+    }
+}
+
+export interface mainDB {
+    name: string;
+    version: number;
 }
